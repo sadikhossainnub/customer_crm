@@ -1,0 +1,68 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}}]",
+ "creation": "2025-09-25 11:21:38.166183",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Customer CRM",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer CRM",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Call",
+   "link_count": 0,
+   "link_to": "Customer Call",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Call Outcome",
+   "link_count": 0,
+   "link_to": "Call Outcome",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Call Dashboard",
+   "link_count": 0,
+   "link_to": "Call Dashboard",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-09-25 11:33:48.687097",
+ "modified_by": "Administrator",
+ "module": "Customer CRM",
+ "name": "Customer CRM",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "Selling",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 41.0,
+ "shortcuts": [],
+ "title": "Customer CRM"
+}

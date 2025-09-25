@@ -43,7 +43,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Customer" : "public/js/customer.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -60,9 +60,9 @@ app_license = "mit"
 # home_page = "login"
 
 # website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
+role_home_page = {
+	"Sales User": "call-center"
+}
 
 # Generators
 # ----------
@@ -83,7 +83,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "customer_crm.install.before_install"
-# after_install = "customer_crm.install.after_install"
+after_install = "customer_crm.install.after_install"
 
 # Uninstallation
 # ------------
@@ -148,23 +148,11 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"customer_crm.tasks.all"
-# 	],
-# 	"daily": [
-# 		"customer_crm.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"customer_crm.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"customer_crm.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"customer_crm.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"customer_crm.customer_crm.tasks.send_daily_followup_reminders"
+	]
+}
 
 # Testing
 # -------
@@ -174,9 +162,10 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "customer_crm.event.get_events"
-# }
+override_whitelisted_methods = {
+	"customer_crm.customer_crm.api.call_api.get_call_stats": "customer_crm.customer_crm.api.call_api.get_call_stats",
+	"customer_crm.customer_crm.api.call_api.get_agent_calls": "customer_crm.customer_crm.api.call_api.get_agent_calls"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

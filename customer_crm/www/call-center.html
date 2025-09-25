@@ -1,0 +1,70 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h2>{{ title }}</h2>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h4>Pending Follow-ups</h4>
+				</div>
+				<div class="card-body">
+					{% if pending_calls %}
+						<div class="list-group">
+							{% for call in pending_calls %}
+							<div class="list-group-item">
+								<h6>{{ call.description }}</h6>
+								<small>Due: {{ call.date }} | Assigned to: {{ call.owner }}</small>
+								<div class="mt-2">
+									<a href="/app/customer-call/{{ call.reference_name }}" class="btn btn-sm btn-primary">View Call</a>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					{% else %}
+						<p>No pending follow-ups for today.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h4>Today's Calls</h4>
+				</div>
+				<div class="card-body">
+					{% if recent_calls %}
+						<div class="list-group">
+							{% for call in recent_calls %}
+							<div class="list-group-item">
+								<h6>{{ call.customer }}</h6>
+								<small>Agent: {{ call.agent }} | Time: {{ call.call_time }} | Outcome: {{ call.call_outcome or "Pending" }}</small>
+								<div class="mt-2">
+									<a href="/app/customer-call/{{ call.name }}" class="btn btn-sm btn-outline-primary">View</a>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					{% else %}
+						<p>No calls made today.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row mt-4">
+		<div class="col-md-12">
+			<a href="/app/customer-call/new" class="btn btn-success">New Call</a>
+			<a href="/app/customer-call" class="btn btn-primary">View All Calls</a>
+		</div>
+	</div>
+</div>
+{% endblock %}
