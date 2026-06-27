@@ -21,8 +21,10 @@
   "next_follow_up_date",
   "assigned_to",
   "section_break_15",
+  "conversation_summary",
   "notes",
-  "conversation_summary"
+  "section_break_history",
+  "conversation_history"
  ],
  "fields": [
   {
@@ -46,10 +48,10 @@
    "label": "Contact Person"
   },
   {
-   "fetch_from": "customer.mobile_no",
    "fieldname": "phone",
-   "fieldtype": "Data",
-   "label": "Phone"
+   "fieldtype": "Table",
+   "label": "Phone Numbers",
+   "options": "Customer Call Phone"
   },
   {
    "fieldname": "column_break_5",
@@ -121,12 +123,22 @@
   {
    "fieldname": "conversation_summary",
    "fieldtype": "Long Text",
-   "label": "Conversation Summary"
+   "label": "Conversation Summary",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_history",
+   "fieldtype": "Section Break",
+   "label": "Conversation History"
+  },
+  {
+   "fieldname": "conversation_history",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-25 11:31:47.656148",
+ "modified": "2026-06-28 00:47:48.115629",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer Call",

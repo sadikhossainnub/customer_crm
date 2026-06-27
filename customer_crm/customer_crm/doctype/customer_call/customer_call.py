@@ -28,6 +28,13 @@ class CustomerCall(Document):
 		if not self.assigned_to:
 			return
 			
+		called_phone = 'Not available'
+		if self.phone:
+			for p in self.phone:
+				if p.is_called:
+					called_phone = p.phone
+					break
+
 		# Email notification
 		frappe.sendmail(
 			recipients=[self.assigned_to],
@@ -36,7 +43,7 @@ class CustomerCall(Document):
 			
 Call Details:
 			- Customer: {self.customer}
-			- Phone: {self.phone or 'Not available'}
+			- Phone: {called_phone}
 			- Follow-up Date: {self.next_follow_up_date}
 			- Notes: {self.notes or 'No notes'}
 			
