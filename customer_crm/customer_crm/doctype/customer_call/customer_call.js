@@ -58,10 +58,8 @@ frappe.ui.form.on('Customer Call', {
 		// Auto-suggest next follow-up date based on outcome
 		if (frm.doc.call_outcome === 'Callback Required') {
 			frm.set_value('next_follow_up_date', get_next_working_day(1));
-			frm.set_value('assigned_to', frappe.session.user);
 		} else if (frm.doc.call_outcome === 'Interested') {
 			frm.set_value('next_follow_up_date', get_next_working_day(3));
-			frm.set_value('assigned_to', frappe.session.user);
 		} else {
 			frm.set_value('next_follow_up_date', get_next_working_day(7));
 		}

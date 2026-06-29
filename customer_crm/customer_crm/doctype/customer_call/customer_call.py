@@ -5,7 +5,7 @@ from frappe.utils import get_url
 class CustomerCall(Document):
 	def after_insert(self):
 		"""Create follow-up task if next follow-up date is set"""
-		if self.next_follow_up_date and self.assigned_to:
+		if self.next_follow_up_date and self.agent:
 			self.create_follow_up_task()
 			self.send_notification()
 	
@@ -17,7 +17,7 @@ class CustomerCall(Document):
 			"reference_type": "Customer Call",
 			"reference_name": self.name,
 			"assigned_by": frappe.session.user,
-			"owner": self.assigned_to,
+			"owner": self.agent,
 			"date": self.next_follow_up_date,
 			"priority": "Medium"
 		})
@@ -25,7 +25,7 @@ class CustomerCall(Document):
 	
 	def send_notification(self):
 		"""Send notification to assigned user"""
-		if not self.assigned_to:
+		if not self.agent:
 			return
 			
 		called_phone = 'Not available'
@@ -37,7 +37,7 @@ class CustomerCall(Document):
 
 		# Email notification
 		frappe.sendmail(
-			recipients=[self.assigned_to],
+			recipients=[self.agent],
 			subject=f"Follow-up assigned: {self.customer}",
 			message=f"""You have been assigned a follow-up call for {self.customer} on {self.next_follow_up_date}.
 			
@@ -58,5 +58,5 @@ View Call: {get_url()}/app/customer-call/{self.name}"""
 				"date": self.next_follow_up_date,
 				"call_id": self.name
 			},
-			user=self.assigned_to
+			user=self.agent
 		)

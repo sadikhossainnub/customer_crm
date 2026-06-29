@@ -19,7 +19,6 @@
   "call_outcome",
   "column_break_12",
   "next_follow_up_date",
-  "assigned_to",
   "section_break_15",
   "conversation_summary",
   "notes",
@@ -104,12 +103,6 @@
    "fieldname": "next_follow_up_date",
    "fieldtype": "Date",
    "label": "Next Follow-up Date"
-  },
-  {
-   "fieldname": "assigned_to",
-   "fieldtype": "Link",
-   "label": "Assigned To",
-   "options": "User"
   },
   {
    "fieldname": "section_break_15",
