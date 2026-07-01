@@ -25,7 +25,6 @@ def send_daily_followup_reminders():
 Customer: {call.customer}
 Phone: {call.phone or 'Not available'}
 Follow-up Date: {tomorrow}
-Previous Notes: {call.notes or 'No notes'}
 
 View Call: {get_url()}/app/customer-call/{call.name}
 Mark Complete: {get_url()}/app/todo/{todo.name}"""

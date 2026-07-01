@@ -9,6 +9,7 @@
   "section_break_pyad",
   "phone",
   "column_break_mecj",
+  "last_call_detail",
   "section_break_iyvl",
   "naming_series",
   "customer",
@@ -35,7 +36,6 @@
   "call_id",
   "section_break_15",
   "conversation_summary",
-  "notes",
   "section_break_history",
   "conversation_history"
  ],
@@ -65,6 +65,12 @@
    "fieldtype": "Table",
    "label": "Phone Numbers",
    "options": "Customer Call Phone"
+  },
+  {
+   "fieldname": "last_call_detail",
+   "fieldtype": "Small Text",
+   "label": "Last Call Detail",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_5",
@@ -161,13 +167,8 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "notes",
-   "fieldtype": "Text Editor",
-   "label": "Notes"
-  },
-  {
    "fieldname": "conversation_summary",
-   "fieldtype": "Long Text",
+   "fieldtype": "Text Editor",
    "label": "Conversation Summary",
    "reqd": 1
   },
@@ -224,7 +225,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-02 00:06:41.487435",
+ "modified": "2026-07-02 02:08:16.557268",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer Call",

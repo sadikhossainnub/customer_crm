@@ -45,7 +45,6 @@ Call Details:
 			- Customer: {self.customer}
 			- Phone: {called_phone}
 			- Follow-up Date: {self.next_follow_up_date}
-			- Notes: {self.notes or 'No notes'}
 			
 View Call: {get_url()}/app/customer-call/{self.name}"""
 		)

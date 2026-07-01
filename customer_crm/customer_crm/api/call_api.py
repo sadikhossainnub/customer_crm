@@ -100,7 +100,7 @@ def get_customer_history(customer, current_call=None):
 
 	calls = frappe.get_all("Customer Call",
 		filters=filters,
-		fields=["name", "call_date", "call_time", "agent", "call_outcome", "conversation_summary", "notes"],
+		fields=["name", "call_date", "call_time", "agent", "call_outcome", "conversation_summary"],
 		order_by="call_date desc, call_time desc"
 	)
 
@@ -111,6 +111,73 @@ def get_customer_history(customer, current_call=None):
 			call.agent_name = "System"
 
 	return calls
+
+
+@frappe.whitelist()
+def get_last_call_detail(customer, current_call=None):
+	if not customer:
+		return ""
+	
+	filters = {"customer": customer}
+	if current_call:
+		filters["name"] = ["!=", current_call]
+		
+	last_call = frappe.get_all("Customer Call",
+		filters=filters,
+		fields=["call_date", "call_time", "agent"],
+		order_by="call_date desc, call_time desc",
+		limit=1
+	)
+	
+	if not last_call:
+		return "No previous calls"
+		
+	call = last_call[0]
+	
+	# Format date
+	call_date = call.call_date
+	if isinstance(call_date, str):
+		call_date = frappe.utils.getdate(call_date)
+		
+	def get_day_suffix(day):
+		if 11 <= day <= 13:
+			return "th"
+		return {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+		
+	day_suffix = get_day_suffix(call_date.day)
+	date_str = f"{call_date.day}{day_suffix} {call_date.strftime('%B')} {call_date.year}"
+	
+	# Format time
+	time_str = ""
+	if call.call_time:
+		t = call.call_time
+		if isinstance(t, str):
+			try:
+				import datetime
+				dt = datetime.datetime.strptime(t, "%H:%M:%S")
+				time_str = dt.strftime("%I:%M %p")
+			except Exception:
+				time_str = t
+		else:
+			import datetime
+			dt = (datetime.datetime.min + t)
+			time_str = dt.strftime("%I:%M %p")
+			
+	# Format agent
+	agent_name = "System"
+	if call.agent:
+		agent_name = frappe.db.get_value("User", call.agent, "full_name") or call.agent
+		
+	# Calculate days
+	days_elapsed = frappe.utils.date_diff(frappe.utils.today(), call_date)
+	
+	# Construct string
+	detail = f"{date_str}"
+	if time_str:
+		detail += f" {time_str}"
+	detail += f", Agent: {agent_name}, ( {days_elapsed} Days)"
+	
+	return detail
 
 
 def find_customer_by_phone(phone):
@@ -160,7 +227,7 @@ def log_call_from_pbx(from_number, to, duration, uniqueid, agent_ext=None):
 			"call_status": "Completed" if int(duration or 0) > 0 else "Missed",
 			"call_direction": "Inbound",
 			"is_auto_logged": 1,
-			"conversation_summary": "Auto-logged from PBX - pending agent notes"
+			"conversation_summary": "Auto-logged from PBX"
 		}).insert(ignore_permissions=True)
 		frappe.db.commit()
 		return doc.name

@@ -4,6 +4,7 @@ frappe.ui.form.on('Customer Call', {
 			frm.set_value('next_follow_up_date', get_next_working_day(7));
 		}
 		render_conversation_history(frm);
+		fetch_last_call_detail(frm);
 
 		// Click-to-Call via MicroSIP (sip: URI handler)
 		if (frm.fields_dict.phone && frm.fields_dict.phone.grid) {
@@ -25,6 +26,7 @@ frappe.ui.form.on('Customer Call', {
 	
 	customer: function(frm) {
 		render_conversation_history(frm);
+		fetch_last_call_detail(frm);
 		if (frm.doc.customer) {
 			// Auto-fetch customer primary contact person for the main field
 			frappe.db.get_value('Customer', frm.doc.customer, 'customer_primary_contact')
@@ -159,12 +161,6 @@ function render_conversation_history(frm) {
 									<strong>Summary:</strong> ${call.conversation_summary}
 								</div>
 							` : ''}
-							
-							${call.notes ? `
-								<div style="font-size: 12px; color: var(--text-muted, #475569); background-color: var(--bg-color, #f8fafc); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color, #e2e8f0); margin-top: 4px;">
-									<strong>Note:</strong> ${call.notes}
-								</div>
-							` : ''}
 						</div>
 					`;
 				});
@@ -175,4 +171,25 @@ function render_conversation_history(frm) {
 			frm.set_df_property('conversation_history', 'options', html);
 		}
 	});
+}
+
+function fetch_last_call_detail(frm) {
+	if (frm.doc.customer) {
+		frappe.call({
+			method: 'customer_crm.customer_crm.api.call_api.get_last_call_detail',
+			args: {
+				customer: frm.doc.customer,
+				current_call: frm.doc.name
+			},
+			callback: function(r) {
+				if (r.message) {
+					frm.set_value('last_call_detail', r.message);
+				} else {
+					frm.set_value('last_call_detail', '');
+				}
+			}
+		});
+	} else {
+		frm.set_value('last_call_detail', '');
+	}
 }
