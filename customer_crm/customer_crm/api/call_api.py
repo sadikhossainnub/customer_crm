@@ -111,3 +111,69 @@ def get_customer_history(customer, current_call=None):
 			call.agent_name = "System"
 
 	return calls
+
+
+def find_customer_by_phone(phone):
+	"""Lookup Customer by phone number — checks Customer.mobile_no and Contact Phone child table"""
+	if not phone:
+		return None
+	phone = phone.strip()
+	# Check Customer's direct mobile number
+	customer = frappe.db.get_value("Customer", {"mobile_no": phone})
+	if customer:
+		return customer
+	# Check Contact Phone linked to Customer via Dynamic Link
+	contact = frappe.db.sql("""
+		SELECT dl.link_name FROM `tabDynamic Link` dl
+		JOIN `tabContact Phone` cp ON cp.parent = dl.parent
+		WHERE dl.link_doctype = 'Customer' AND cp.phone = %s
+		LIMIT 1
+	""", phone)
+	return contact[0][0] if contact else None
+
+
+@frappe.whitelist(allow_guest=False)
+def log_call_from_pbx(from_number, to, duration, uniqueid, agent_ext=None):
+	"""Whitelisted endpoint called by Asterisk on call hangup (h extension).
+	Matches caller/callee to a Customer and creates a Customer Call record."""
+	settings = frappe.get_single("Telephony Settings")
+	if not settings.enable_auto_logging:
+		return
+
+	customer = find_customer_by_phone(from_number) or find_customer_by_phone(to)
+	agent_user = None
+	if agent_ext:
+		agent_user = frappe.db.get_value("User", {"phone": agent_ext}, "name")
+	agent_user = agent_user or frappe.session.user
+
+	# Duplicate guard — skip if this Asterisk unique ID already logged
+	if frappe.db.exists("Customer Call", {"call_id": uniqueid}):
+		return
+
+	if customer:
+		doc = frappe.get_doc({
+			"doctype": "Customer Call",
+			"customer": customer,
+			"agent": agent_user,
+			"call_id": uniqueid,
+			"call_duration": int(duration or 0),
+			"call_status": "Completed" if int(duration or 0) > 0 else "Missed",
+			"call_direction": "Inbound",
+			"is_auto_logged": 1,
+			"conversation_summary": "Auto-logged from PBX - pending agent notes"
+		}).insert(ignore_permissions=True)
+		frappe.db.commit()
+		return doc.name
+	else:
+		frappe.publish_realtime("unmatched_call", {"number": from_number})
+
+
+@frappe.whitelist(allow_guest=False)
+def notify_incoming_call(from_number, agent_ext):
+	"""Called by Asterisk on incoming call ring event.
+	Pushes a realtime notification to the matched agent's browser for screen pop."""
+	customer = find_customer_by_phone(from_number)
+	agent_user = frappe.db.get_value("User", {"phone": agent_ext}, "name")
+	info = {"number": from_number, "customer": customer}
+	if agent_user:
+		frappe.publish_realtime("incoming_call_popup", info, user=agent_user)

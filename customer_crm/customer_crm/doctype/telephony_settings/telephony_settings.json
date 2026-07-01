@@ -1,0 +1,91 @@
+{
+    "actions": [],
+    "creation": "2026-07-01 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "ami_host",
+        "ami_port",
+        "ami_username",
+        "ami_secret",
+        "column_break_1",
+        "asterisk_context",
+        "recording_path",
+        "enable_auto_logging"
+    ],
+    "fields": [
+        {
+            "fieldname": "ami_host",
+            "fieldtype": "Data",
+            "label": "AMI Host",
+            "description": "Asterisk Manager Interface host address, e.g. 192.168.1.100"
+        },
+        {
+            "default": "5038",
+            "fieldname": "ami_port",
+            "fieldtype": "Int",
+            "label": "AMI Port"
+        },
+        {
+            "fieldname": "ami_username",
+            "fieldtype": "Data",
+            "label": "AMI Username"
+        },
+        {
+            "fieldname": "ami_secret",
+            "fieldtype": "Password",
+            "label": "AMI Secret"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "from-internal",
+            "fieldname": "asterisk_context",
+            "fieldtype": "Data",
+            "label": "Asterisk Context"
+        },
+        {
+            "fieldname": "recording_path",
+            "fieldtype": "Data",
+            "label": "Recording Path",
+            "description": "Server path to call recordings directory"
+        },
+        {
+            "default": "0",
+            "fieldname": "enable_auto_logging",
+            "fieldtype": "Check",
+            "label": "Enable Auto Logging",
+            "description": "When enabled, PBX webhook will automatically create Customer Call records"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_single": 1,
+    "links": [],
+    "modified": "2026-07-01 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Customer CRM",
+    "name": "Telephony Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "print": 1,
+            "read": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "read": 1,
+            "role": "Sales User"
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+}

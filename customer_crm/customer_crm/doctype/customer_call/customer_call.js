@@ -4,6 +4,23 @@ frappe.ui.form.on('Customer Call', {
 			frm.set_value('next_follow_up_date', get_next_working_day(7));
 		}
 		render_conversation_history(frm);
+
+		// Click-to-Call via MicroSIP (sip: URI handler)
+		if (frm.fields_dict.phone && frm.fields_dict.phone.grid) {
+			frm.fields_dict.phone.grid.add_custom_button(__('📞 Call'), function() {
+				let selected = frm.fields_dict.phone.grid.get_selected_children();
+				if (selected.length) {
+					let number = selected[0].phone;
+					window.location.href = `sip:${number}`;
+					frappe.show_alert({
+						message: __('Dialing {0} via MicroSIP...', [number]),
+						indicator: 'green'
+					}, 5);
+				} else {
+					frappe.msgprint(__('Please select a phone number row first.'));
+				}
+			});
+		}
 	},
 	
 	customer: function(frm) {

@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/customer_crm/css/customer_crm.css"
-# app_include_js = "/assets/customer_crm/js/customer_crm.js"
+app_include_js = "/assets/customer_crm/js/customer_crm.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/customer_crm/css/customer_crm.css"
@@ -151,6 +151,9 @@ after_install = "customer_crm.install.after_install"
 scheduler_events = {
 	"daily": [
 		"customer_crm.customer_crm.tasks.send_daily_followup_reminders"
+	],
+	"hourly": [
+		"customer_crm.customer_crm.tasks.notify_unmatched_auto_calls"
 	]
 }
 
