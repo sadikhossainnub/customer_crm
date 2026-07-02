@@ -185,11 +185,11 @@ function fetch_last_call_detail(frm) {
 				if (r.message) {
 					frm.set_value('last_call_detail', r.message);
 				} else {
-					frm.set_value('last_call_detail', '');
+					frm.set_value('last_call_detail', 'No previous calls');
 				}
 			}
 		});
 	} else {
-		frm.set_value('last_call_detail', '');
+		frm.set_value('last_call_detail', 'No customer selected');
 	}
 }

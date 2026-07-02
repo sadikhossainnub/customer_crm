@@ -1,0 +1,13 @@
+{
+ "creation": "2026-07-02 15:30:00.000000",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2026-07-02 15:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "Customer CRM",
+ "name": "Outstanding Amount vs Paid",
+ "owner": "Administrator",
+ "source_name": "Outstanding Amount vs Paid",
+ "timeseries": 0
+}

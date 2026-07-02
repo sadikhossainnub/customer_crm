@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}}]",
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}}]",
  "creation": "2025-09-25 11:21:38.166183",
  "custom_blocks": [],
  "docstatus": 0,
@@ -50,9 +50,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Analytics",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Analytics",
+   "link_count": 0,
+   "link_to": "customer-analytics",
+   "link_type": "Page",
+   "onboard": 1,
+   "type": "Link"
   }
  ],
- "modified": "2025-09-25 11:33:48.687097",
+ "modified": "2026-07-02 15:20:00.000000",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
@@ -63,6 +82,12 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 41.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "label": "Customer Analytics",
+   "link_to": "customer-analytics",
+   "type": "Page"
+  }
+ ],
  "title": "Customer CRM"
 }
