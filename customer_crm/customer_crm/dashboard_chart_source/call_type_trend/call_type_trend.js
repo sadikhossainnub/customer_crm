@@ -1,0 +1,1 @@
+frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['Call Type Trend'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.call_type_trend.call_type_trend.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n

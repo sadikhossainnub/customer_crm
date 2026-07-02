@@ -1,0 +1,1 @@
+# Call Type Trend Init\n

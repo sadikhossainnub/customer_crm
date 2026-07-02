@@ -1,0 +1,1 @@
+frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['UTM Source Chart'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.utm_source_chart.utm_source_chart.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n
