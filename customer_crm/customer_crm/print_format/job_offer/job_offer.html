@@ -3,52 +3,58 @@
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+	.print-format {
+		margin-top: 10mm;
+		margin-bottom: 20mm;
+		margin-left: 10mm;
+		margin-right: 10mm;
+	}
+
 	.job-offer-container {
 		font-family: 'Inter', sans-serif;
 		color: #2d3748;
-		line-height: 1.6;
-		padding: 20px;
-		font-size: 14px;
+		line-height: 1.35;
+		padding: 0;
+		font-size: 11.5px;
 	}
 
 	/* Letterhead styling */
+	.print-letterhead {
+		width: 100%;
+		margin-bottom: 6px;
+	}
+
+	.print-letterhead img {
+		max-width: 100%;
+		height: auto !important;
+	}
+
 	.offer-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		border-bottom: 2px solid #e2e8f0;
-		padding-bottom: 20px;
-		margin-bottom: 30px;
+		padding-bottom: 6px;
+		margin-bottom: 0;
 	}
 
 	.company-logo-text {
-		font-size: 24px;
+		font-size: 20px;
 		font-weight: 700;
 		color: #1a365d;
 		letter-spacing: -0.5px;
-	}
-
-	.offer-badge {
-		background: #ebf8ff;
-		color: #2b6cb0;
-		padding: 6px 16px;
-		border-radius: 9999px;
-		font-weight: 600;
-		font-size: 12px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
 	}
 
 	/* Document Info Card */
 	.info-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 20px;
+		gap: 6px 16px;
 		background: #f7fafc;
 		border: 1px solid #edf2f7;
-		border-radius: 8px;
-		padding: 20px;
-		margin-bottom: 30px;
+		border-radius: 6px;
+		padding: 8px 12px;
+		margin-bottom: 10px;
 	}
 
 	.info-item {
@@ -57,61 +63,68 @@
 	}
 
 	.info-label {
-		font-size: 11px;
+		font-size: 9px;
 		text-transform: uppercase;
 		color: #718096;
 		font-weight: 600;
 		letter-spacing: 0.5px;
-		margin-bottom: 4px;
+		margin-bottom: 1px;
 	}
 
 	.info-value {
-		font-size: 14px;
+		font-size: 11.5px;
 		color: #2d3748;
 		font-weight: 500;
 	}
 
 	/* Salutation and Letter Body */
 	.letter-body {
-		margin-bottom: 40px;
+		margin-bottom: 10px;
 		text-align: justify;
 	}
 
 	.salutation {
-		font-size: 16px;
+		font-size: 12.5px;
 		font-weight: 600;
 		color: #1a365d;
-		margin-bottom: 16px;
+		margin-bottom: 6px;
+		margin-top: 0;
 	}
 
 	.welcome-text {
-		font-size: 15px;
-		margin-bottom: 24px;
+		font-size: 11.5px;
+		margin-bottom: 6px;
+		margin-top: 0;
+	}
+
+	.letter-body p {
+		margin: 4px 0;
 	}
 
 	/* Terms Table */
 	.terms-section {
-		margin-top: 30px;
-		margin-bottom: 40px;
+		margin-top: 10px;
+		margin-bottom: 10px;
 	}
 
 	.terms-title {
-		font-size: 15px;
+		font-size: 12px;
 		font-weight: 600;
 		color: #1a365d;
-		margin-bottom: 12px;
+		margin-bottom: 5px;
 		border-left: 3px solid #2b6cb0;
-		padding-left: 10px;
+		padding-left: 8px;
 	}
 
 	.terms-table {
 		width: 100%;
 		border-collapse: collapse;
-		margin-bottom: 20px;
+		margin-bottom: 8px;
 	}
 
-	.terms-table th, .terms-table td {
-		padding: 12px 16px;
+	.terms-table th,
+	.terms-table td {
+		padding: 5px 8px;
 		text-align: left;
 		border-bottom: 1px solid #e2e8f0;
 	}
@@ -120,163 +133,202 @@
 		background: #f7fafc;
 		font-weight: 600;
 		color: #4a5568;
-		font-size: 12px;
+		font-size: 9.5px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
 
 	.terms-table td {
-		font-size: 13px;
+		font-size: 11px;
+		vertical-align: top;
 	}
 
 	/* Signatures */
 	.signature-section {
-		margin-top: 50px;
+		margin-top: 12px;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-end;
 		page-break-inside: avoid;
+		page-break-before: avoid;
 	}
 
 	.signature-box {
-		width: 220px;
+		width: 200px;
 		border-top: 1px dashed #cbd5e0;
-		padding-top: 10px;
+		padding-top: 6px;
+		margin-top: 30px;
 		text-align: center;
 	}
 
 	.sig-title {
-		font-size: 12px;
+		font-size: 10.5px;
 		color: #718096;
 		font-weight: 500;
 	}
 
 	.sig-company {
-		font-size: 13px;
+		font-size: 11px;
 		font-weight: 600;
 		color: #2d3748;
-		margin-top: 4px;
+		margin-top: 2px;
 	}
 
 	/* Detailed Terms Page Break */
 	.detailed-terms {
-		margin-top: 40px;
-		padding-top: 30px;
-		border-top: 2px solid #e2e8f0;
 		page-break-before: always;
 	}
 
 	.detailed-terms-title {
-		font-size: 18px;
+		font-size: 15px;
 		font-weight: 700;
 		color: #1a365d;
-		margin-bottom: 20px;
+		margin-bottom: 12px;
 		text-align: center;
 	}
 
 	.detailed-terms-body {
-		font-size: 13px;
+		font-size: 11.5px;
 		color: #4a5568;
-		line-height: 1.7;
+		line-height: 1.6;
+	}
+
+	/* Footer styling */
+	.print-footer {
+		width: 100%;
+		text-align: center;
+	}
+
+	.print-footer img {
+		max-width: 100%;
+		height: auto !important;
 	}
 </style>
 
 <div class="job-offer-container">
 	<!-- Header -->
-	<div class="offer-header">
-		<div class="company-logo-text">
-			{% if letter_head and not no_letterhead -%}
-				{{ letter_head }}
-			{%- else -%}
+	<div id="header-html">
+		{% if letter_head and not no_letterhead -%}
+		<div class="print-letterhead">
+			{{ letter_head }}
+		</div>
+		{%- else -%}
+		<div class="offer-header">
+			<div class="company-logo-text">
 				{{ doc.company }}
-			{%- endif %}
+			</div>
 		</div>
-		<div class="offer-badge">
-			Employment Offer
-		</div>
+		{%- endif %}
 	</div>
 
-	<!-- Info Grid -->
-	<div class="info-grid">
-		<div class="info-item">
-			<span class="info-label">Candidate Name</span>
-			<span class="info-value">{{ doc.applicant_name }}</span>
-		</div>
-		<div class="info-item">
-			<span class="info-label">Offer Date</span>
-			<span class="info-value">{{ doc.offer_date or '' }}</span>
-		</div>
-		<div class="info-item">
-			<span class="info-label">Designation</span>
-			<span class="info-value">{{ doc.designation }}</span>
-		</div>
-		<div class="info-item">
-			<span class="info-label">Ref Number</span>
-			<span class="info-value">{{ doc.name }}</span>
-		</div>
-	</div>
+	<div class="page-1-content" id="page1content">
 
-	<!-- Letter Body -->
-	<div class="letter-body">
-		<p class="salutation">Dear {{ doc.applicant_name }},</p>
-		<p class="welcome-text">
-			We are pleased to appoint you in the services of <strong>{{ doc.company }}</strong>. We were highly impressed with your qualifications and experience during the evaluation process, and we look forward to a successful and mutually beneficial career association with us.
-		</p>
-		
-		<p>
-			Please find below the detailed financial details and structure of your employment:
-		</p>
-	</div>
-
-	<!-- Terms Section -->
-	{%- if doc.offer_terms -%}
-	<div class="terms-section">
-		<div class="terms-title">Compensation & Benefits Package</div>
-		<table class="terms-table">
-			<thead>
-				<tr>
-					<th>Salary Component / Term</th>
-					<th>Details / Value</th>
-				</tr>
-			</thead>
-			<tbody>
-				{%- for row in doc.offer_terms -%}
-				<tr>
-					<td style="font-weight: 500; color: #2d3748;">{{ row.offer_term }}</td>
-					<td style="color: #4a5568;">{{ row.value }}</td>
-				</tr>
-				{%- endfor -%}
-			</tbody>
-		</table>
-	</div>
-	{%- endif -%}
-
-	<!-- Closing Statement -->
-	<div class="letter-body" style="margin-top: 30px;">
-		<p>
-			If you accept this offer, please sign and return a copy of this letter along with any required onboarding documents. If you have any questions regarding the terms of this offer, please feel free to reach out to our Human Resources department.
-		</p>
-		<p style="margin-top: 20px; font-weight: 500; color: #1a365d;">
-			Welcome to {{ doc.company }}!
-		</p>
-	</div>
-
-	<!-- Signature Section -->
-	<div class="signature-section">
-		<div class="signature-box">
-			<br><br><br>
-			<span class="sig-title">Applicant Signature & Date</span>
-			<div class="sig-company" style="font-weight: 400; font-size: 12px; color: #718096;">
-				I accept the offer terms
+		<!-- Info Grid -->
+		<div class="info-grid">
+			<div class="info-item">
+				<span class="info-label">Candidate Name</span>
+				<span class="info-value">{{ doc.applicant_name }}</span>
+			</div>
+			<div class="info-item">
+				<span class="info-label">Offer Date</span>
+				<span class="info-value">{{ doc.offer_date or '' }}</span>
+			</div>
+			<div class="info-item">
+				<span class="info-label">Designation</span>
+				<span class="info-value">{{ doc.designation }}</span>
+			</div>
+			<div class="info-item">
+				<span class="info-label">Ref Number</span>
+				<span class="info-value">{{ doc.name }}</span>
 			</div>
 		</div>
 
-		<div class="signature-box">
-			<br><br><br>
-			<span class="sig-title">Authorized Signatory</span>
-			<div class="sig-company">{{ doc.company }}</div>
+		<!-- Letter Body -->
+		<div class="letter-body">
+			<p class="salutation">Dear {{ doc.applicant_name }},</p>
+			<p class="welcome-text">
+				We are pleased to appoint you in the services of <strong>{{ doc.company }}</strong>. We were highly
+				impressed with your qualifications and experience during the evaluation process, and we look forward to
+				a
+				successful and mutually beneficial career association with us.
+			</p>
+
+			<p>
+				Please find below the detailed financial details and structure of your employment:
+			</p>
 		</div>
-	</div>
+
+		<!-- Terms Section -->
+		{%- if doc.offer_terms -%}
+		<div class="terms-section">
+			<div class="terms-title">Compensation & Benefits Package</div>
+			<table class="terms-table">
+				<thead>
+					<tr>
+						<th>Salary Component / Term</th>
+						<th>Details / Value</th>
+					</tr>
+				</thead>
+				<tbody>
+					{%- for row in doc.offer_terms -%}
+					<tr>
+						<td style="font-weight: 500; color: #2d3748;">{{ row.offer_term }}</td>
+						<td style="color: #4a5568;">{{ frappe.render_template(row.value, {'doc': doc}) if row.value else
+							''
+							}}</td>
+					</tr>
+					{%- endfor -%}
+				</tbody>
+			</table>
+		</div>
+		{%- endif -%}
+
+		<!-- Closing Statement -->
+		<div class="letter-body" style="margin-top: 16px;">
+			<p>
+				If you accept this offer, please sign and return a copy of this letter along with any required
+				onboarding
+				documents. If you have any questions regarding the terms of this offer, please feel free to reach out to
+				our
+				Human Resources department.
+			</p>
+			<p style="margin-top: 20px; font-weight: 500; color: #1a365d;">
+				Welcome to {{ doc.company }}!
+			</p>
+		</div>
+
+		<!-- Signature Section -->
+		<div class="signature-section">
+			<div class="signature-box">
+				<span class="sig-title">Applicant Signature &amp; Date</span>
+				<div class="sig-company" style="font-weight: 400; font-size: 12px; color: #718096;">
+					I accept the offer terms
+				</div>
+			</div>
+
+			<div class="signature-box">
+				<span class="sig-title">Authorized Signatory</span>
+				<div class="sig-company">{{ doc.company }}</div>
+			</div>
+		</div>
+
+	</div><!-- end .page-1-content -->
+
+	<script>
+		(function () {
+			var el = document.getElementById('page1content');
+			if (!el) return;
+			/* A4 body height after header/footer at ~96dpi */
+			var pageH = 900;
+			var natural = el.scrollHeight;
+			if (natural > pageH) {
+				var scale = pageH / natural;
+				el.style.transformOrigin = 'top left';
+				el.style.transform = 'scale(' + scale + ')';
+				el.style.width = (100 / scale) + '%';
+			}
+		})();
+	</script>
 
 	<!-- Detailed Terms & Conditions (Page 2) -->
 	{% if terms_exist %}
@@ -287,4 +339,11 @@
 		</div>
 	</div>
 	{% endif %}
+
+	<!-- Footer -->
+	<div id="footer-html">
+		{% if footer and not no_letterhead -%}
+		{{ footer }}
+		{%- endif %}
+	</div>
 </div>
