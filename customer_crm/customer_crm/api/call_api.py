@@ -1,4 +1,6 @@
 import frappe
+from frappe.utils import today as _today, getdate, date_diff
+
 
 @frappe.whitelist()
 def get_call_stats():
@@ -19,6 +21,79 @@ def get_call_stats():
 	}
 	
 	return stats
+
+
+@frappe.whitelist()
+def get_target_vs_actual(from_date=None, to_date=None, agent=None):
+	"""Get target vs actual call counts for all agents (or specific agent).
+	Used by the Call Dashboard to show progress bars."""
+	from_date = from_date or _today()
+	to_date   = to_date   or _today()
+
+	# Get active targets for the period
+	target_conditions = "from_date <= %(to_date)s AND to_date >= %(from_date)s"
+	target_args = {"from_date": from_date, "to_date": to_date}
+	if agent:
+		target_conditions += " AND agent = %(agent)s"
+		target_args["agent"] = agent
+
+	targets = frappe.db.sql(f"""
+		SELECT
+			agent,
+			target_period,
+			from_date, to_date,
+			COALESCE(daily_call_target, 0)        AS daily_call_target,
+			COALESCE(weekly_call_target, 0)       AS weekly_call_target,
+			COALESCE(daily_interested_target, 0)  AS daily_interested_target,
+			COALESCE(weekly_interested_target, 0) AS weekly_interested_target
+		FROM `tabAgent Call Target`
+		WHERE {target_conditions}
+		ORDER BY agent, from_date
+	""", target_args, as_dict=True)
+
+	result = []
+	for t in targets:
+		period_start = max(getdate(t.from_date), getdate(from_date))
+		period_end   = min(getdate(t.to_date),   getdate(to_date))
+		days         = date_diff(period_end, period_start) + 1
+
+		if t.target_period == "Daily":
+			call_target = t.daily_call_target * days
+			int_target  = t.daily_interested_target * days
+		elif t.target_period == "Weekly":
+			weeks = max(days / 7, 1)
+			call_target = round(t.weekly_call_target * weeks)
+			int_target  = round(t.weekly_interested_target * weeks)
+		else:
+			call_target = t.daily_call_target * days
+			int_target  = t.daily_interested_target * days
+
+		actual = frappe.db.sql("""
+			SELECT
+				COUNT(*) AS total,
+				SUM(CASE WHEN call_outcome = 'Interested' THEN 1 ELSE 0 END) AS interested
+			FROM `tabCustomer Call`
+			WHERE agent = %s AND call_date BETWEEN %s AND %s
+		""", (t.agent, period_start, period_end), as_dict=True)[0]
+
+		actual_calls     = int(actual.total or 0)
+		actual_interested = int(actual.interested or 0)
+		achievement_pct  = round(actual_calls / call_target * 100, 1) if call_target else 0
+		interested_pct   = round(actual_interested / int_target * 100, 1) if int_target else 0
+
+		result.append({
+			"agent":             t.agent,
+			"agent_name":        frappe.db.get_value("User", t.agent, "full_name") or t.agent,
+			"call_target":       call_target,
+			"actual_calls":      actual_calls,
+			"remaining":         max(call_target - actual_calls, 0),
+			"achievement_pct":   min(achievement_pct, 100),
+			"int_target":        int_target,
+			"actual_interested": actual_interested,
+			"interested_pct":    min(interested_pct, 100),
+		})
+
+	return result
 
 @frappe.whitelist()
 def get_agent_calls(agent=None, date=None):

@@ -1,6 +1,38 @@
 import frappe
 from frappe.model.document import Document
+from frappe.model.mapper import get_mapped_doc
 from frappe.utils import get_url
+
+
+@frappe.whitelist()
+def make_sales_order(source_name, target_doc=None):
+	"""Create a new Sales Order pre-filled from a Customer Call record."""
+	def set_missing_values(source, target):
+		target.run_method("set_missing_values")
+		target.run_method("set_other_charges")
+		target.run_method("calculate_taxes_and_totals")
+
+	doc = get_mapped_doc(
+		"Customer Call",
+		source_name,
+		{
+			"Customer Call": {
+				"doctype": "Sales Order",
+				"field_map": {
+					"customer": "customer",
+					"customer_name": "customer_name",
+					"territory": "territory",
+					"name": "customer_crm_call_id",
+				},
+				"validation": {
+					"docstatus": ["!=", 2]
+				}
+			}
+		},
+		target_doc,
+		set_missing_values,
+	)
+	return doc
 
 class CustomerCall(Document):
 	def after_insert(self):

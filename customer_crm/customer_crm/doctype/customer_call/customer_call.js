@@ -22,6 +22,38 @@ frappe.ui.form.on('Customer Call', {
 				}
 			});
 		}
+
+		// Create Sales Order button (only for saved docs with a customer)
+		if (!frm.is_new() && frm.doc.customer) {
+			frm.add_custom_button(__('Sales Order'), function() {
+				frappe.call({
+					method: 'customer_crm.customer_crm.doctype.customer_call.customer_call.make_sales_order',
+					args: {
+						source_name: frm.doc.name
+					},
+					freeze: true,
+					freeze_message: __('Creating Sales Order...'),
+					callback: function(r) {
+						if (r.message) {
+							frappe.model.sync(r.message);
+							frappe.set_route('Form', 'Sales Order', r.message.name);
+						}
+					}
+				});
+			}, __('Create'));
+		}
+
+		// Target vs Actual shortcut
+		if (!frm.is_new()) {
+			frm.add_custom_button(__('Target vs Actual'), function() {
+				frappe.set_route('query-report/Call Target vs Actual', {
+					agent: frm.doc.agent,
+					from_date: frm.doc.call_date,
+					to_date: frm.doc.call_date
+				});
+			}, __('Reports'));
+		}
+
 	},
 	
 	customer: function(frm) {
