@@ -150,7 +150,8 @@ after_install = "customer_crm.install.after_install"
 
 scheduler_events = {
 	"daily": [
-		"customer_crm.customer_crm.tasks.send_daily_followup_reminders"
+		"customer_crm.customer_crm.tasks.send_daily_followup_reminders",
+		"customer_crm.customer_crm.tasks.send_today_followup_summary"
 	],
 	"hourly": [
 		"customer_crm.customer_crm.tasks.notify_unmatched_auto_calls"
