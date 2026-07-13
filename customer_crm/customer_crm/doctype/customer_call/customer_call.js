@@ -106,13 +106,12 @@ frappe.ui.form.on('Customer Call', {
 	},
 	
 	call_outcome: function(frm) {
-		// Auto-suggest next follow-up date based on outcome
-		if (frm.doc.call_outcome === 'Callback Required') {
-			frm.set_value('next_follow_up_date', get_next_working_day(1));
-		} else if (frm.doc.call_outcome === 'Interested') {
-			frm.set_value('next_follow_up_date', get_next_working_day(3));
-		} else {
-			frm.set_value('next_follow_up_date', get_next_working_day(7));
+		if (frm.doc.call_outcome) {
+			frappe.db.get_value('Call Outcome', frm.doc.call_outcome, 'follow_up_days')
+				.then(r => {
+					let days = (r.message && r.message.follow_up_days !== undefined) ? r.message.follow_up_days : 7;
+					frm.set_value('next_follow_up_date', get_next_working_day(days));
+				});
 		}
 	}
 });

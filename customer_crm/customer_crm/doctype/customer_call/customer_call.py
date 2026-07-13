@@ -35,6 +35,26 @@ def make_sales_order(source_name, target_doc=None):
 	return doc
 
 class CustomerCall(Document):
+	def validate(self):
+		self.set_next_follow_up_date()
+
+	def set_next_follow_up_date(self):
+		if not self.next_follow_up_date and self.call_outcome:
+			follow_up_days = frappe.db.get_value("Call Outcome", self.call_outcome, "follow_up_days")
+			if follow_up_days is None:
+				follow_up_days = 7
+			
+			from frappe.utils import add_days, getdate, today
+			base_date = self.call_date or today()
+			date = getdate(add_days(base_date, int(follow_up_days)))
+			day_of_week = date.weekday()
+			if day_of_week == 6:  # Sunday
+				date = add_days(date, 1)
+			elif day_of_week == 5:  # Saturday
+				date = add_days(date, 2)
+			
+			self.next_follow_up_date = date
+
 	def after_insert(self):
 		"""Create follow-up task if next follow-up date is set"""
 		if self.next_follow_up_date and self.agent:

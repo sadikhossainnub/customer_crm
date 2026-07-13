@@ -21,6 +21,12 @@
             "label": "Call Outcome",
             "reqd": 1,
             "unique": 1
+        },
+        {
+            "fieldname": "follow_up_days",
+            "fieldtype": "Int",
+            "label": "Follow Up Days",
+            "default": "7"
         }
     ],
     "grid_page_length": 50,
