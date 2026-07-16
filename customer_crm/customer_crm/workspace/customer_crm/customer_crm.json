@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}}]",
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}}]",
  "creation": "2025-09-25 11:21:38.166183",
  "custom_blocks": [],
  "docstatus": 0,
@@ -81,11 +81,20 @@
    "type": "Link"
   }
  ],
- "modified": "2026-07-16 11:28:23.880686",
+ "modified": "2026-07-16 11:39:19.168955",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
- "number_cards": [],
+ "number_cards": [
+  {
+   "label": "Today Call",
+   "number_card_name": "Total Call"
+  },
+  {
+   "label": "Last 7 Days Call ",
+   "number_card_name": "Total Call Last 7 Days"
+  }
+ ],
  "owner": "Administrator",
  "parent_page": "Selling",
  "public": 1,
