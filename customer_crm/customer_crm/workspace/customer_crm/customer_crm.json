@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}}]",
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}},{\"id\":\"vjiPE6ew9q\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-09-25 11:21:38.166183",
  "custom_blocks": [],
  "docstatus": 0,
@@ -79,9 +79,50 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Call Summary",
+   "link_count": 0,
+   "link_to": "Call Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Call Target vs Actual",
+   "link_count": 0,
+   "link_to": "Call Target vs Actual",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Customer Call",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Purchase Analysis",
+   "link_count": 0,
+   "link_to": "Customer Purchase Analysis",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Customer",
+   "type": "Link"
   }
  ],
- "modified": "2026-07-16 11:39:19.168955",
+ "modified": "2026-07-16 12:41:09.872609",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
