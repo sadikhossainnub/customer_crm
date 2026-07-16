@@ -319,3 +319,158 @@ def notify_incoming_call(from_number, agent_ext):
 	info = {"number": from_number, "customer": customer}
 	if agent_user:
 		frappe.publish_realtime("incoming_call_popup", info, user=agent_user)
+
+
+# ────────────────────────────────────────────────────────────
+#  Customer Assignment APIs
+# ────────────────────────────────────────────────────────────
+
+@frappe.whitelist()
+def get_customer_assignment(customer, check_date=None):
+	"""Return the active assignment record for a customer on a given date,
+	along with details of the assigned agents active on that date.
+	If check_date is omitted, today's date is used."""
+	check_date = check_date or frappe.utils.today()
+
+	result = frappe.db.sql("""
+		SELECT
+			ca.name AS assignment_name,
+			caa.agent,
+			caa.agent_name,
+			cac.from_date AS customer_from,
+			cac.to_date AS customer_to,
+			caa.from_date AS agent_from,
+			caa.to_date AS agent_to
+		FROM `tabCustomer Assignment` ca
+		JOIN `tabCustomer Assignment Customer` cac ON cac.parent = ca.name
+		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
+		WHERE cac.customer = %(customer)s
+		  AND ca.is_active = 1
+		  AND cac.from_date <= %(check_date)s
+		  AND cac.to_date >= %(check_date)s
+		  AND caa.from_date <= %(check_date)s
+		  AND caa.to_date >= %(check_date)s
+		ORDER BY cac.from_date DESC
+	""", {"customer": customer, "check_date": check_date}, as_dict=True)
+
+	return result
+
+
+@frappe.whitelist()
+def get_agent_assigned_customers(agent=None, from_date=None, to_date=None):
+	"""Return all customers assigned to an agent within a date range.
+	Defaults to current user and today."""
+	agent     = agent     or frappe.session.user
+	from_date = from_date or frappe.utils.today()
+	to_date   = to_date   or frappe.utils.today()
+
+	rows = frappe.db.sql("""
+		SELECT
+			cac.customer,
+			cac.customer_name,
+			ca.name AS assignment,
+			cac.from_date AS customer_from_date,
+			cac.to_date AS customer_to_date,
+			caa.from_date AS agent_from_date,
+			caa.to_date AS agent_to_date
+		FROM `tabCustomer Assignment Customer` cac
+		JOIN `tabCustomer Assignment` ca ON ca.name = cac.parent
+		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
+		WHERE caa.agent      = %(agent)s
+		  AND ca.is_active  = 1
+		  AND cac.from_date  <= %(to_date)s
+		  AND cac.to_date    >= %(from_date)s
+		  AND caa.from_date  <= %(to_date)s
+		  AND caa.to_date    >= %(from_date)s
+		ORDER BY cac.customer_name
+	""", {"agent": agent, "from_date": from_date, "to_date": to_date}, as_dict=True)
+
+	return rows
+
+
+@frappe.whitelist()
+def quick_assign_customer(customer, agent, from_date, to_date, notes=""):
+	"""Create a Customer Assignment record for a single customer and single agent.
+	Called from the Customer form's 'Assign to Agent' button."""
+	frappe.has_permission("Customer Assignment", "create", throw=True)
+
+	doc = frappe.get_doc({
+		"doctype": "Customer Assignment",
+		"title": f"Quick Assignment: {customer} to {agent}",
+		"from_date": from_date,
+		"to_date": to_date,
+		"is_active": 1,
+		"notes": notes,
+		"agents": [{
+			"agent": agent,
+			"from_date": from_date,
+			"to_date": to_date
+		}],
+		"customers": [{
+			"customer": customer,
+			"from_date": from_date,
+			"to_date": to_date
+		}]
+	})
+	doc.insert(ignore_permissions=False)
+	frappe.db.commit()
+	return doc.name
+
+
+def check_assignment_permission(doc, method=None):
+	"""
+	Hooked on Customer Call, Sales Order, and ToDo validate event.
+	Blocks users from performing actions on assigned customers unless
+	they are one of the assigned agents or have the System Manager role.
+	"""
+	# 1. Allow System Manager
+	if "System Manager" in frappe.get_roles():
+		return
+
+	# 2. Identify the customer
+	customer = None
+	if doc.doctype in ["Customer Call", "Sales Order"]:
+		customer = doc.customer
+	elif doc.doctype == "ToDo":
+		if doc.reference_type == "Customer Call" and doc.reference_name:
+			customer = frappe.db.get_value("Customer Call", doc.reference_name, "customer")
+		elif doc.reference_type == "Customer":
+			customer = doc.reference_name
+	else:
+		customer = doc.get("customer")
+
+	if not customer:
+		return
+
+	# 3. Determine the date of the check (defaulting to today)
+	check_date = doc.get("posting_date") or doc.get("call_date") or doc.get("date") or frappe.utils.today()
+
+	# 4. Check active assignments for this customer on this date
+	active_assignments = frappe.db.sql("""
+		SELECT
+			caa.agent,
+			caa.agent_name,
+			cac.from_date,
+			cac.to_date
+		FROM `tabCustomer Assignment` ca
+		JOIN `tabCustomer Assignment Customer` cac ON cac.parent = ca.name
+		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
+		WHERE cac.customer = %(customer)s
+		  AND ca.is_active = 1
+		  AND cac.from_date <= %(check_date)s
+		  AND cac.to_date >= %(check_date)s
+		  AND caa.from_date <= %(check_date)s
+		  AND caa.to_date >= %(check_date)s
+	""", {"customer": customer, "check_date": check_date}, as_dict=True)
+
+	if not active_assignments:
+		return  # No active assignment, anyone can access
+
+	# 5. Check if the current user is one of the active assigned agents
+	assigned_agents = {a.agent for a in active_assignments}
+	if frappe.session.user not in assigned_agents:
+		agent_names = ", ".join([f"{a.agent_name or a.agent}" for a in active_assignments])
+		frappe.throw(
+			f"Customer <b>{customer}</b> is assigned to: <b>{agent_names}</b>. "
+			f"Only the assigned agent or a System Manager can record calls, follow-ups, or sales orders."
+		)

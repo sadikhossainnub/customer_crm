@@ -137,13 +137,17 @@ after_install = "customer_crm.install.after_install"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Customer Call": {
+		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission"
+	},
+	"Sales Order": {
+		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission"
+	},
+	"ToDo": {
+		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
