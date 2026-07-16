@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}},{\"id\":\"vjiPE6ew9q\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gDOr5k_VO0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Agent Call Target\",\"col\":3}},{\"id\":\"EGvuaJWlxk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}},{\"id\":\"vjiPE6ew9q\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-09-25 11:21:38.166183",
  "custom_blocks": [],
  "docstatus": 0,
@@ -29,55 +29,6 @@
    "link_to": "customer-analytics",
    "link_type": "Page",
    "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer CRM",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer Call",
-   "link_count": 0,
-   "link_to": "Customer Call",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Call Outcome",
-   "link_count": 0,
-   "link_to": "Call Outcome",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Call Dashboard",
-   "link_count": 0,
-   "link_to": "Call Dashboard",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer Assignment",
-   "link_count": 0,
-   "link_to": "Customer Assignment",
-   "link_type": "DocType",
-   "onboard": 0,
    "type": "Link"
   },
   {
@@ -120,9 +71,68 @@
    "onboard": 0,
    "report_ref_doctype": "Customer",
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer CRM",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Call",
+   "link_count": 0,
+   "link_to": "Customer Call",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Agent Call Target",
+   "link_count": 0,
+   "link_to": "Agent Call Target",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Call Outcome",
+   "link_count": 0,
+   "link_to": "Call Outcome",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Call Dashboard",
+   "link_count": 0,
+   "link_to": "Call Dashboard",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Assignment",
+   "link_count": 0,
+   "link_to": "Customer Assignment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-07-16 12:41:09.872609",
+ "modified": "2026-07-16 12:42:48.423848",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
@@ -142,6 +152,15 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 41.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Orange",
+   "doc_view": "New",
+   "label": "Agent Call Target",
+   "link_to": "Agent Call Target",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
  "title": "Customer CRM"
 }
