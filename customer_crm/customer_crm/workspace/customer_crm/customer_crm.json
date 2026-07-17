@@ -34,47 +34,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Call Summary",
-   "link_count": 0,
-   "link_to": "Call Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Call Target vs Actual",
-   "link_count": 0,
-   "link_to": "Call Target vs Actual",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Customer Call",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer Purchase Analysis",
-   "link_count": 0,
-   "link_to": "Customer Purchase Analysis",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Customer",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Customer CRM",
    "link_count": 5,
    "link_type": "DocType",
@@ -130,9 +89,48 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Call Summary",
+   "link_count": 0,
+   "link_to": "Call Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Call Target vs Actual",
+   "link_count": 0,
+   "link_to": "Call Target vs Actual",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Customer Purchase Analysis",
+   "link_count": 0,
+   "link_to": "Customer Purchase Analysis",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-07-16 12:42:48.423848",
+ "modified": "2026-07-17 07:20:58.259463",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
