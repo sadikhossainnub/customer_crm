@@ -1,11 +1,10 @@
 {
  "actions": [],
- "autoname": "naming_series:",
+ "autoname": "custom",
  "creation": "2026-07-13 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
   "agent",
   "target_period",
   "column_break_1",
@@ -21,13 +20,6 @@
   "notes"
  ],
  "fields": [
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "ACT-.YYYY.-",
-   "reqd": 1
-  },
   {
    "fieldname": "agent",
    "fieldtype": "Link",
