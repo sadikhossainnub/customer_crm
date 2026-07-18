@@ -1,69 +1,190 @@
 {% extends "templates/web.html" %}
 
 {% block page_content %}
-<div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<h2>{{ title }}</h2>
+<div class="container py-4">
+	<!-- Dashboard Header -->
+	<div class="row mb-4 align-items-center">
+		<div class="col-md-8">
+			<h2 class="display-5 font-weight-bold text-dark mb-1">{{ title|default("Call Center Dashboard") }}</h2>
+			<p class="text-muted">Real-time overview of your call performance and assignments</p>
+			<small class="text-secondary" style="font-size: 0.75rem;">
+				Debug Info: User: <strong>{{ current_user|default("None") }}</strong> | Target: <strong>{{ daily_call_target }}</strong> | Assigned Customers: <strong>{{ assigned_customers|default([])|length }}</strong>
+			</small>
+		</div>
+		<div class="col-md-4 text-md-right">
+			<a href="/app/customer-call/new" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm">
+				New Call
+			</a>
+			<a href="/app/customer-call" class="btn btn-outline-primary px-4 py-2 font-weight-bold ml-2">
+				View All
+			</a>
 		</div>
 	</div>
 	
-	<div class="row">
-		<div class="col-md-6">
-			<div class="card">
-				<div class="card-header">
-					<h4>Pending Follow-ups</h4>
+	<!-- Stats / Targets Row -->
+	<div class="row mb-4">
+		<!-- Today's Call Target -->
+		<div class="col-md-6 mb-3">
+			<div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white;">
+				<div class="card-body d-flex flex-column justify-content-between p-4">
+					<div>
+						<h5 class="card-title text-uppercase font-weight-bold mb-3" style="opacity: 0.8; font-size: 0.85rem; letter-spacing: 1px;">
+							Today's Call Target
+						</h5>
+						<div class="d-flex align-items-baseline mb-2">
+							<span class="display-4 font-weight-bold mr-2">{{ calls_made_today|default(0) }}</span>
+							<span class="h4 font-weight-light" style="opacity: 0.7;">/ {% if daily_call_target|default(0) > 0 %}{{ daily_call_target }}{% else %}Not Set{% endif %}</span>
+						</div>
+						<p class="mb-4" style="opacity: 0.9; font-size: 0.95rem;">
+							{% if daily_call_target|default(0) > 0 %}
+								You have completed <strong>{{ call_target_progress|default(0) }}%</strong> of your daily target.
+							{% else %}
+								No active daily call target is set for today.
+							{% endif %}
+						</p>
+					</div>
+					{% if daily_call_target|default(0) > 0 %}
+					<div class="progress" style="height: 10px; border-radius: 5px; background-color: rgba(255,255,255,0.2);">
+						<div class="progress-bar bg-white text-dark font-weight-bold" role="progressbar" 
+							 style="width: {{ call_target_progress|default(0) }}%; border-radius: 5px;" 
+							 aria-valuenow="{{ call_target_progress|default(0) }}" aria-valuemin="0" aria-valuemax="100">
+						</div>
+					</div>
+					{% endif %}
 				</div>
-				<div class="card-body">
-					{% if pending_calls %}
-						<div class="list-group">
+			</div>
+		</div>
+
+		<!-- Assigned Customers Count -->
+		<div class="col-md-6 mb-3">
+			<div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+				<div class="card-body d-flex flex-column justify-content-between p-4">
+					<div>
+						<h5 class="card-title text-uppercase font-weight-bold mb-3" style="opacity: 0.8; font-size: 0.85rem; letter-spacing: 1px;">
+							My Assigned Customers
+						</h5>
+						<div class="display-4 font-weight-bold mb-2">
+							{{ assigned_customers|default([])|length }}
+						</div>
+						<p class="mb-4" style="opacity: 0.9; font-size: 0.95rem;">
+							Customers currently assigned to you for contact and relations today.
+						</p>
+					</div>
+					<div class="text-right">
+						<a href="#assigned-customers-section" class="btn btn-sm btn-light font-weight-bold text-success px-3" style="border-radius: 20px;">
+							View List &rarr;
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Main Lists Grid -->
+	<div class="row">
+		<!-- Left Column: Tasks and Assignments -->
+		<div class="col-md-6 mb-4">
+			<!-- Pending Calls (Assigned but not called today) -->
+			<div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+				<div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+					<h4 class="font-weight-bold text-dark mb-0">Pending Calls Today</h4>
+				</div>
+				<div class="card-body px-4 pb-4 pt-2">
+					{% if pending_calls|default([]) %}
+						<div class="list-group list-group-flush">
 							{% for call in pending_calls %}
-							<div class="list-group-item">
-								<h6>{{ call.description }}</h6>
-								<small>Due: {{ call.date }} | Assigned to: {{ call.owner }}</small>
-								<div class="mt-2">
-									<a href="/app/customer-call/{{ call.reference_name }}" class="btn btn-sm btn-primary">View Call</a>
+							<div class="list-group-item px-0 py-3 border-bottom">
+								<h6 class="font-weight-bold text-dark mb-1">{{ call.customer_name or call.customer }}</h6>
+								<div class="d-flex justify-content-between align-items-center">
+									<small class="text-muted">ID: {{ call.customer }} | Valid: {{ call.from_date }} to {{ call.to_date }}</small>
+									<a href="/app/customer-call/new?customer={{ call.customer }}" class="btn btn-sm btn-primary px-3" style="border-radius: 4px;">
+										Call Now
+									</a>
 								</div>
 							</div>
 							{% endfor %}
 						</div>
 					{% else %}
-						<p>No pending follow-ups for today.</p>
+						<div class="text-center py-4">
+							<p class="text-muted mb-0">Great job! No pending assigned calls for today.</p>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+
+			<!-- My Assigned Customers List -->
+			<div id="assigned-customers-section" class="card border-0 shadow-sm" style="border-radius: 12px;">
+				<div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+					<h4 class="font-weight-bold text-dark mb-0">All Assigned Customers</h4>
+				</div>
+				<div class="card-body px-4 pb-4 pt-2">
+					{% if assigned_customers|default([]) %}
+						<div class="list-group list-group-flush">
+							{% for item in assigned_customers %}
+							<div class="list-group-item px-0 py-3 border-bottom">
+								<h6 class="font-weight-bold text-dark mb-1">{{ item.customer_name or item.customer }}</h6>
+								<div class="d-flex justify-content-between align-items-center">
+									<small class="text-muted">ID: {{ item.customer }} | Valid: {{ item.from_date }} to {{ item.to_date }}</small>
+									<div>
+										{% if item.status == "Called" %}
+											<span class="badge badge-success px-2 py-1 mr-2" style="font-size: 0.75rem;">Called</span>
+										{% else %}
+											<span class="badge badge-warning px-2 py-1 mr-2" style="font-size: 0.75rem; color: #856404; background-color: #fff3cd;">Pending</span>
+										{% endif %}
+										<a href="/app/customer/{{ item.customer }}" class="btn btn-sm btn-outline-success px-3" style="border-radius: 4px;">
+											View
+										</a>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					{% else %}
+						<div class="text-center py-4">
+							<p class="text-muted mb-0">No customers currently assigned to you.</p>
+						</div>
 					{% endif %}
 				</div>
 			</div>
 		</div>
-		
-		<div class="col-md-6">
-			<div class="card">
-				<div class="card-header">
-					<h4>Today's Calls</h4>
+
+		<!-- Right Column: Recent Activity -->
+		<div class="col-md-6 mb-4">
+			<div class="card border-0 shadow-sm" style="border-radius: 12px;">
+				<div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+					<h4 class="font-weight-bold text-dark mb-0">My Recent Calls</h4>
 				</div>
-				<div class="card-body">
-					{% if recent_calls %}
-						<div class="list-group">
+				<div class="card-body px-4 pb-4 pt-2">
+					{% if recent_calls|default([]) %}
+						<div class="list-group list-group-flush">
 							{% for call in recent_calls %}
-							<div class="list-group-item">
-								<h6>{{ call.customer }}</h6>
-								<small>Agent: {{ call.agent }} | Time: {{ call.call_time }} | Outcome: {{ call.call_outcome or "Pending" }}</small>
-								<div class="mt-2">
-									<a href="/app/customer-call/{{ call.name }}" class="btn btn-sm btn-outline-primary">View</a>
+							<div class="list-group-item px-0 py-3 border-bottom">
+								<h6 class="font-weight-bold text-dark mb-1">{{ call.customer }}</h6>
+								<div class="d-flex justify-content-between align-items-center mb-1">
+									<small class="text-muted">
+										Agent: {{ call.agent }} | Date: {{ call.call_date }} | Time: {{ call.call_time }}
+									</small>
+									{% if call.call_outcome %}
+										<span class="badge badge-success px-2 py-1" style="font-size: 0.75rem;">{{ call.call_outcome }}</span>
+									{% else %}
+										<span class="badge badge-secondary px-2 py-1" style="font-size: 0.75rem;">Pending</span>
+									{% endif %}
+								</div>
+								<div class="text-right">
+									<a href="/app/customer-call/{{ call.name }}" class="btn btn-sm btn-outline-primary px-3" style="border-radius: 4px;">
+										View Call Log
+									</a>
 								</div>
 							</div>
 							{% endfor %}
 						</div>
 					{% else %}
-						<p>No calls made today.</p>
+						<div class="text-center py-4">
+							<p class="text-muted mb-0">No recent calls found.</p>
+						</div>
 					{% endif %}
 				</div>
 			</div>
-		</div>
-	</div>
-	
-	<div class="row mt-4">
-		<div class="col-md-12">
-			<a href="/app/customer-call/new" class="btn btn-success">New Call</a>
-			<a href="/app/customer-call" class="btn btn-primary">View All Calls</a>
 		</div>
 	</div>
 </div>
