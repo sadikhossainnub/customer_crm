@@ -4,24 +4,42 @@ import frappe
 def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
-		filters = json.loads(filters)
-	filters = filters or {}
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
 	customer = filters.get("customer") or filters.get("name")
-	
-	cond = ""
-	val = {}
+
 	if customer:
-		cond = "AND parent = %(customer)s"
-		val = {"customer": customer}
-		
-	data = frappe.db.sql(f"""
-		SELECT owner, COUNT(name) as count
-		FROM `tabCustomer`
-		WHERE name IS NOT NULL {cond}
-		GROUP BY owner
-	""", val, as_dict=1)
-	
+		data = frappe.db.sql("""
+			SELECT owner, COUNT(name) as count
+			FROM `tabCustomer`
+			WHERE name = %(customer)s
+			GROUP BY owner
+		""", {"customer": customer}, as_dict=1)
+	else:
+		data = frappe.db.sql("""
+			SELECT owner, COUNT(name) as count
+			FROM `tabCustomer`
+			WHERE disabled = 0
+				AND owner IS NOT NULL
+				AND owner != ''
+			GROUP BY owner
+			ORDER BY count DESC
+			LIMIT 15
+		""", as_dict=1)
+
+	labels = []
+	for d in data:
+		label = d.owner or "Unknown"
+		if "@" in label:
+			label = label.split("@")[0]
+		labels.append(label)
+
 	return {
-		"labels": [d.owner for d in data],
-		"datasets": [{"name": "Customers Owned", "values": [d.count for d in data]}]
+		"labels": labels if labels else ["No Data"],
+		"datasets": [{"name": "Customers Managed", "values": [d.count for d in data] if data else [0]}]
 	}

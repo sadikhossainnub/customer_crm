@@ -272,17 +272,31 @@ def get(chart_name=None, chart=None, filters=None, **kwargs):
 def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
-		filters = json.loads(filters)
-	filters = filters or {}
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
 	customer = filters.get("customer") or filters.get("name")
-	
-	if not customer:
-		return {"labels": [], "datasets": []}
+
+	if customer:
+		has_user = frappe.db.exists("Portal User", {"parent": customer, "parenttype": "Customer"})
+		labels = ["Has Web Account", "No Web Account"]
+		values = [1, 0] if has_user else [0, 1]
+	else:
+		total_customers = frappe.db.count("Customer", {"disabled": 0})
+		portal_customers = frappe.db.sql(\"\"\"
+			SELECT COUNT(DISTINCT parent)
+			FROM `tabPortal User`
+			WHERE parenttype = 'Customer'
+		\"\"\")[0][0] or 0
+		no_portal_customers = max(0, total_customers - portal_customers)
 		
-	has_user = frappe.db.exists("Portal User", {"parent": customer})
-	labels = ["Has Web Account", "No Web Account"]
-	values = [1, 0] if has_user else [0, 1]
-	
+		labels = ["Has Web Account", "No Web Account"]
+		values = [portal_customers, no_portal_customers]
+
 	return {
 		"labels": labels,
 		"datasets": [{"values": values}]
@@ -335,7 +349,10 @@ def get(chart_name=None, chart=None, filters=None, **kwargs):
 def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
-		filters = json.loads(filters)
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
 	filters = filters or {}
 	customer = filters.get("customer") or filters.get("name")
 	
@@ -345,19 +362,24 @@ def get(chart_name=None, chart=None, filters=None, **kwargs):
 		cond = "AND customer = %(customer)s"
 		val = {"customer": customer}
 		
-	inbound = frappe.db.sql(f\"\"\"
-		SELECT COUNT(name) FROM `tabCustomer Call`
-		WHERE call_type = 'Inbound' {cond}
-	\"\"\", val)[0][0] or 0
+	data = frappe.db.sql(f\"\"\"
+		SELECT call_type, COUNT(name) as count
+		FROM `tabCustomer Call`
+		WHERE call_type IS NOT NULL AND call_type != '' {cond}
+		GROUP BY call_type
+		ORDER BY count DESC
+	\"\"\", val, as_dict=1)
 	
-	outbound = frappe.db.sql(f\"\"\"
-		SELECT COUNT(name) FROM `tabCustomer Call`
-		WHERE call_type = 'Outbound' {cond}
-	\"\"\", val)[0][0] or 0
+	labels = [d.call_type for d in data]
+	values = [d.count for d in data]
 	
+	if not labels:
+		labels = ["No Calls"]
+		values = [0]
+		
 	return {
-		"labels": ["Inbound Calls", "Outbound Calls"],
-		"datasets": [{"values": [inbound, outbound]}]
+		"labels": labels,
+		"datasets": [{"values": values}]
 	}
 """
 	},
@@ -511,26 +533,488 @@ def get(chart_name=None, chart=None, filters=None, **kwargs):
 def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
-		filters = json.loads(filters)
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+
+	if customer:
+		data = frappe.db.sql(\"\"\"
+			SELECT owner, COUNT(name) as count
+			FROM `tabCustomer`
+			WHERE name = %(customer)s
+			GROUP BY owner
+		\"\"\", {"customer": customer}, as_dict=1)
+	else:
+		data = frappe.db.sql(\"\"\"
+			SELECT owner, COUNT(name) as count
+			FROM `tabCustomer`
+			WHERE disabled = 0
+				AND owner IS NOT NULL
+				AND owner != ''
+			GROUP BY owner
+			ORDER BY count DESC
+			LIMIT 15
+		\"\"\", as_dict=1)
+
+	labels = []
+	for d in data:
+		label = d.owner or "Unknown"
+		if "@" in label:
+			label = label.split("@")[0]
+		labels.append(label)
+
+	return {
+		"labels": labels if labels else ["No Data"],
+		"datasets": [{"name": "Customers Managed", "values": [d.count for d in data] if data else [0]}]
+	}
+"""
+	},
+	{
+		"name": "Sales Trend (Monthly)",
+		"folder": "sales_trend_(monthly)",
+		"type": "Line",
+		"py": """import frappe
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
 	filters = filters or {}
 	customer = filters.get("customer") or filters.get("name")
-	
+
 	cond = ""
 	val = {}
 	if customer:
-		cond = "AND parent = %(customer)s"
+		cond = "AND customer = %(customer)s"
 		val = {"customer": customer}
-		
+
 	data = frappe.db.sql(f\"\"\"
-		SELECT owner, COUNT(name) as count
-		FROM `tabCustomer`
-		WHERE name IS NOT NULL {cond}
-		GROUP BY owner
+		SELECT DATE_FORMAT(posting_date, '%%Y-%%m') as month, SUM(grand_total) as total
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {cond}
+		GROUP BY month
+		ORDER BY month DESC
+		LIMIT 12
 	\"\"\", val, as_dict=1)
-	
+
+	data.reverse()
 	return {
-		"labels": [d.owner for d in data],
-		"datasets": [{"name": "Customers Owned", "values": [d.count for d in data]}]
+		"labels": [d.month for d in data] if data else ["No Sales"],
+		"datasets": [{"name": "Sales Amount", "values": [float(d.total or 0) for d in data] if data else [0.0]}]
+	}
+"""
+	},
+	{
+		"name": "Credit Limit Utilization",
+		"folder": "credit_limit_utilization",
+		"type": "Donut",
+		"py": """import frappe
+from frappe.utils import flt
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+
+	if customer:
+		data = frappe.db.sql(\"\"\"
+			SELECT
+				c.name,
+				COALESCE(
+					(SELECT SUM(ccl.credit_limit)
+					 FROM `tabCustomer Credit Limit` ccl
+					 WHERE ccl.parent = c.name AND ccl.parenttype = 'Customer'),
+					0
+				) as credit_limit,
+				COALESCE(
+					(SELECT SUM(si.outstanding_amount)
+					 FROM `tabSales Invoice` si
+					 WHERE si.customer = c.name AND si.docstatus = 1 AND si.outstanding_amount > 0),
+					0
+				) as current_outstanding
+			FROM `tabCustomer` c
+			WHERE c.name = %(customer)s
+		\"\"\", {"customer": customer}, as_dict=1)
+
+		limit_val = 0.0
+		outstanding = 0.0
+
+		if data:
+			limit_val = flt(data[0].credit_limit)
+			outstanding = flt(data[0].current_outstanding)
+
+		if limit_val == 0.0:
+			return {
+				"labels": ["No Credit Limit Set"],
+				"datasets": [{"name": "Usage", "values": [0]}]
+			}
+
+		available = max(0.0, limit_val - outstanding)
+		return {
+			"labels": ["Utilized Credit", "Available Credit"],
+			"datasets": [
+				{
+					"name": "Credit Status",
+					"values": [outstanding, available]
+				}
+			]
+		}
+	else:
+		data = frappe.db.sql(\"\"\"
+			SELECT * FROM (
+				SELECT
+					c.name as customer,
+					c.customer_name,
+					COALESCE(
+						(SELECT SUM(ccl.credit_limit)
+						 FROM `tabCustomer Credit Limit` ccl
+						 WHERE ccl.parent = c.name AND ccl.parenttype = 'Customer'),
+						0
+					) as credit_limit,
+					COALESCE(
+						(SELECT SUM(si.outstanding_amount)
+						 FROM `tabSales Invoice` si
+						 WHERE si.customer = c.name AND si.docstatus = 1 AND si.outstanding_amount > 0),
+						0
+					) as current_outstanding
+				FROM `tabCustomer` c
+				WHERE c.disabled = 0
+			) sub
+			WHERE credit_limit > 0
+			ORDER BY (current_outstanding / credit_limit) DESC
+			LIMIT 10
+		\"\"\", as_dict=1)
+
+		labels = [d.customer_name or d.customer for d in data]
+		values = [round((flt(d.current_outstanding) / flt(d.credit_limit)) * 100, 1) if d.credit_limit else 0 for d in data]
+
+		return {
+			"labels": labels,
+			"datasets": [
+				{
+					"name": "Utilization %",
+					"values": values
+				}
+			]
+		}
+"""
+	},
+	{
+		"name": "Outstanding Amount vs Paid",
+		"folder": "outstanding_amount_vs_paid",
+		"type": "Donut",
+		"py": """import frappe
+from frappe.utils import flt
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+	cond = ""
+	val = {}
+	if customer:
+		cond = "AND customer = %(customer)s"
+		val = {"customer": customer}
+
+	data = frappe.db.sql(f\"\"\"
+		SELECT
+			COALESCE(SUM(grand_total), 0) as total_invoiced,
+			COALESCE(SUM(outstanding_amount), 0) as total_outstanding,
+			COALESCE(SUM(grand_total - outstanding_amount), 0) as total_paid
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {cond}
+	\"\"\", val, as_dict=1)
+
+	total_paid = 0.0
+	total_outstanding = 0.0
+
+	if data:
+		total_paid = flt(data[0].total_paid)
+		total_outstanding = flt(data[0].total_outstanding)
+
+	return {
+		"labels": ["Paid Amount", "Outstanding Amount"],
+		"datasets": [
+			{
+				"name": "Receivable Status",
+				"values": [total_paid, total_outstanding]
+			}
+		]
+	}
+"""
+	},
+	{
+		"name": "Payment Behavior",
+		"folder": "payment_behavior",
+		"type": "Pie",
+		"py": """import frappe
+from frappe.utils import getdate, nowdate, flt
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+	conditions = []
+	values = {}
+
+	if customer:
+		conditions.append("si.customer = %(customer)s")
+		values["customer"] = customer
+
+	where_clause = " AND ".join(conditions)
+	if where_clause:
+		where_clause = "AND " + where_clause
+
+	data = frappe.db.sql(f\"\"\"
+		SELECT
+			si.name,
+			si.grand_total,
+			si.outstanding_amount,
+			si.due_date,
+			(
+				SELECT MAX(pe.posting_date)
+				FROM `tabPayment Entry Reference` per
+				INNER JOIN `tabPayment Entry` pe ON pe.name = per.parent
+				WHERE per.reference_doctype = 'Sales Invoice'
+					AND per.reference_name = si.name
+					AND pe.docstatus = 1
+			) as last_payment_date
+		FROM `tabSales Invoice` si
+		WHERE si.docstatus = 1 AND si.is_return = 0 {where_clause}
+	\"\"\", values, as_dict=1)
+
+	on_time = 0
+	late = 0
+	unpaid = 0
+
+	today = getdate(nowdate())
+
+	for inv in data:
+		due = getdate(inv.due_date) if inv.due_date else today
+		outstanding = flt(inv.outstanding_amount)
+
+		if outstanding >= flt(inv.grand_total):
+			if due < today:
+				late += 1
+			else:
+				unpaid += 1
+		elif outstanding > 0:
+			if inv.last_payment_date and getdate(inv.last_payment_date) <= due:
+				on_time += 1
+			else:
+				late += 1
+		else:
+			if inv.last_payment_date and getdate(inv.last_payment_date) <= due:
+				on_time += 1
+			elif inv.last_payment_date:
+				late += 1
+			else:
+				on_time += 1
+
+	return {
+		"labels": ["On-time", "Late", "Unpaid"],
+		"datasets": [
+			{
+				"name": "Payment Status Ratio",
+				"values": [on_time, late, unpaid]
+			}
+		]
+	}
+"""
+	},
+	{
+		"name": "Top Selling Items",
+		"folder": "top_selling_items",
+		"type": "Bar",
+		"py": """import frappe
+from frappe.utils import flt
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+	conditions = []
+	values = {}
+
+	if customer:
+		conditions.append("si.customer = %(customer)s")
+		values["customer"] = customer
+
+	where_clause = " AND ".join(conditions)
+	if where_clause:
+		where_clause = "AND " + where_clause
+
+	data = frappe.db.sql(f\"\"\"
+		SELECT
+			sii.item_code,
+			sii.item_name,
+			SUM(sii.amount) as total_amount
+		FROM `tabSales Invoice Item` sii
+		INNER JOIN `tabSales Invoice` si ON si.name = sii.parent
+		WHERE si.docstatus = 1 {where_clause}
+		GROUP BY sii.item_code
+		ORDER BY total_amount DESC
+		LIMIT 10
+	\"\"\", values, as_dict=1)
+
+	labels = [d.item_name or d.item_code for d in data]
+	amounts = [flt(d.total_amount) for d in data]
+
+	return {
+		"labels": labels,
+		"datasets": [
+			{
+				"name": "Sales Amount",
+				"values": amounts
+			}
+		]
+	}
+"""
+	},
+	{
+		"name": "Order Value Distribution",
+		"folder": "order_value_distribution",
+		"type": "Bar",
+		"py": """import frappe
+from frappe.utils import flt, cint
+
+@frappe.whitelist()
+def get(chart_name=None, chart=None, filters=None, **kwargs):
+	if isinstance(filters, str):
+		import json
+		try:
+			filters = json.loads(filters)
+		except Exception:
+			filters = {}
+	elif not filters:
+		filters = {}
+
+	customer = filters.get("customer") or filters.get("name")
+	conditions = []
+	values = {}
+
+	if customer:
+		conditions.append("customer = %(customer)s")
+		values["customer"] = customer
+
+	where_clause = " AND ".join(conditions)
+	if where_clause:
+		where_clause = "AND " + where_clause
+
+	min_max = frappe.db.sql(f\"\"\"
+		SELECT
+			MIN(grand_total) as min_val,
+			MAX(grand_total) as max_val
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {where_clause}
+	\"\"\", values, as_dict=1)
+
+	if not min_max or min_max[0].min_val is None:
+		return {"labels": [], "datasets": []}
+
+	min_val = flt(min_max[0].min_val)
+	max_val = flt(min_max[0].max_val)
+
+	if max_val <= min_val:
+		return {
+			"labels": [f"৳{int(min_val)}"],
+			"datasets": [{"name": "Orders count", "values": [1]}]
+		}
+
+	num_buckets = 8
+	bucket_width = (max_val - min_val) / num_buckets
+
+	if bucket_width > 1000:
+		bucket_width = round(bucket_width / 1000) * 1000
+	elif bucket_width > 100:
+		bucket_width = round(bucket_width / 100) * 100
+	else:
+		bucket_width = round(bucket_width / 10) * 10
+
+	if bucket_width == 0:
+		bucket_width = 1
+
+	select_parts = []
+	query_values = dict(values)
+
+	for i in range(num_buckets):
+		low = min_val + (i * bucket_width)
+		high = low + bucket_width
+		if i == num_buckets - 1:
+			high = max(high, max_val + 1)
+		query_values[f"low_{i}"] = low
+		query_values[f"high_{i}"] = high
+		select_parts.append(f"SUM(CASE WHEN grand_total >= %(low_{i})s AND grand_total < %(high_{i})s THEN 1 ELSE 0 END) as b_{i}")
+
+	select_sql = ", ".join(select_parts)
+	counts_data = frappe.db.sql(f\"\"\"
+		SELECT {select_sql}
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {where_clause}
+	\"\"\", query_values, as_dict=1)
+
+	labels = []
+	values_list = []
+
+	if counts_data:
+		row = counts_data[0]
+		for i in range(num_buckets):
+			cnt = cint(row.get(f"b_{i}"))
+			if cnt > 0:
+				low = min_val + (i * bucket_width)
+				high = low + bucket_width
+				labels.append(f"৳{int(low)}-{int(high)}")
+				values_list.append(cnt)
+
+	return {
+		"labels": labels,
+		"datasets": [
+			{
+				"name": "Number of Orders",
+				"values": values_list
+			}
+		]
 	}
 """
 	}
@@ -542,7 +1026,7 @@ for chart in charts_info:
 	
 	# Write source init
 	with open(os.path.join(source_dir, "__init__.py"), "w") as f:
-		f.write(f"# {chart['name']} Init\\n")
+		f.write(f"# {chart['name']} Init\n")
 		
 	# Write source JSON
 	source_json = {
@@ -565,8 +1049,21 @@ for chart in charts_info:
 	with open(os.path.join(source_dir, chart["folder"] + ".py"), "w") as f:
 		f.write(chart["py"])
 		
-	# Write source JS
-	source_js = "frappe.provide('frappe.dashboards.chart_sources');\\n\\nfrappe.dashboards.chart_sources['" + chart["name"] + "'] = {\\n\\tmethod: 'customer_crm.customer_crm.dashboard_chart_source." + chart["folder"] + "." + chart["folder"] + ".get',\\n\\tfilters: [\\n\\t\\t{\\n\\t\\t\\tfieldname: 'customer',\\n\\t\\t\\tlabel: __('Customer'),\\n\\t\\t\\tfieldtype: 'Link',\\n\\t\\t\\toptions: 'Customer',\\n\\t\\t}\\n\\t],\\n};\\n"
+	# Write source JS - writing real newlines and tabs directly
+	source_js = f"""frappe.provide('frappe.dashboards.chart_sources');
+
+frappe.dashboards.chart_sources['{chart["name"]}'] = {{
+	method: 'customer_crm.customer_crm.dashboard_chart_source.{chart["folder"]}.{chart["folder"]}.get',
+	filters: [
+		{{
+			fieldname: 'customer',
+			label: __('Customer'),
+			fieldtype: 'Link',
+			options: 'Customer',
+		}}
+	],
+}};
+"""
 	with open(os.path.join(source_dir, chart["folder"] + ".js"), "w") as f:
 		f.write(source_js)
 		

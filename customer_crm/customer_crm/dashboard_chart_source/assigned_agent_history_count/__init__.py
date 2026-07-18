@@ -1,1 +1,1 @@
-# Assigned Agent History Count Init\n
+# Assigned Agent History Count Init

@@ -1,1 +1,1 @@
-# UTM Source Chart Init\n
+# UTM Source Chart Init

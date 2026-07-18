@@ -1,1 +1,13 @@
-frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['Order Trend Graph'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.order_trend_graph.order_trend_graph.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n
+frappe.provide('frappe.dashboards.chart_sources');
+
+frappe.dashboards.chart_sources['Order Trend Graph'] = {
+	method: 'customer_crm.customer_crm.dashboard_chart_source.order_trend_graph.order_trend_graph.get',
+	filters: [
+		{
+			fieldname: 'customer',
+			label: __('Customer'),
+			fieldtype: 'Link',
+			options: 'Customer',
+		}
+	],
+};

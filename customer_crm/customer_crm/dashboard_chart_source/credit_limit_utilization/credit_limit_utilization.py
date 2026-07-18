@@ -1,19 +1,8 @@
 import frappe
 from frappe.utils import flt
 
-
 @frappe.whitelist()
-def get(
-	chart_name=None,
-	chart=None,
-	no_cache=None,
-	filters=None,
-	from_date=None,
-	to_date=None,
-	timespan=None,
-	time_interval=None,
-	heatmap_year=None,
-):
+def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
 		try:
@@ -26,7 +15,6 @@ def get(
 	customer = filters.get("customer") or filters.get("name")
 
 	if customer:
-		# Individual customer credit limit status
 		data = frappe.db.sql("""
 			SELECT
 				c.name,
@@ -54,7 +42,6 @@ def get(
 			outstanding = flt(data[0].current_outstanding)
 
 		if limit_val == 0.0:
-			# Default standard dummy return or alert
 			return {
 				"labels": ["No Credit Limit Set"],
 				"datasets": [{"name": "Usage", "values": [0]}]
@@ -71,26 +58,27 @@ def get(
 			]
 		}
 	else:
-		# Top 10 customer utilization
 		data = frappe.db.sql("""
-			SELECT
-				c.name as customer,
-				c.customer_name,
-				COALESCE(
-					(SELECT SUM(ccl.credit_limit)
-					 FROM `tabCustomer Credit Limit` ccl
-					 WHERE ccl.parent = c.name AND ccl.parenttype = 'Customer'),
-					0
-				) as credit_limit,
-				COALESCE(
-					(SELECT SUM(si.outstanding_amount)
-					 FROM `tabSales Invoice` si
-					 WHERE si.customer = c.name AND si.docstatus = 1 AND si.outstanding_amount > 0),
-					0
-				) as current_outstanding
-			FROM `tabCustomer` c
-			WHERE c.disabled = 0
-			HAVING credit_limit > 0
+			SELECT * FROM (
+				SELECT
+					c.name as customer,
+					c.customer_name,
+					COALESCE(
+						(SELECT SUM(ccl.credit_limit)
+						 FROM `tabCustomer Credit Limit` ccl
+						 WHERE ccl.parent = c.name AND ccl.parenttype = 'Customer'),
+						0
+					) as credit_limit,
+					COALESCE(
+						(SELECT SUM(si.outstanding_amount)
+						 FROM `tabSales Invoice` si
+						 WHERE si.customer = c.name AND si.docstatus = 1 AND si.outstanding_amount > 0),
+						0
+					) as current_outstanding
+				FROM `tabCustomer` c
+				WHERE c.disabled = 0
+			) sub
+			WHERE credit_limit > 0
 			ORDER BY (current_outstanding / credit_limit) DESC
 			LIMIT 10
 		""", as_dict=1)

@@ -6,8 +6,8 @@
  "modified": "2026-07-02 15:40:00.000000",
  "modified_by": "Administrator",
  "module": "Customer CRM",
- "name": "Payment Behavior",
+ "name": "Sales Trend (Monthly)",
  "owner": "Administrator",
- "source_name": "Payment Behavior",
+ "source_name": "Sales Trend (Monthly)",
  "timeseries": 0
 }

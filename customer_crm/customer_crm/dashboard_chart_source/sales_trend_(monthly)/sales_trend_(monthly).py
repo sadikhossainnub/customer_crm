@@ -10,29 +10,24 @@ def get(chart_name=None, chart=None, filters=None, **kwargs):
 			filters = {}
 	filters = filters or {}
 	customer = filters.get("customer") or filters.get("name")
-	
+
 	cond = ""
 	val = {}
 	if customer:
 		cond = "AND customer = %(customer)s"
 		val = {"customer": customer}
-		
+
 	data = frappe.db.sql(f"""
-		SELECT call_type, COUNT(name) as count
-		FROM `tabCustomer Call`
-		WHERE call_type IS NOT NULL AND call_type != '' {cond}
-		GROUP BY call_type
-		ORDER BY count DESC
+		SELECT DATE_FORMAT(posting_date, '%%Y-%%m') as month, SUM(grand_total) as total
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {cond}
+		GROUP BY month
+		ORDER BY month DESC
+		LIMIT 12
 	""", val, as_dict=1)
-	
-	labels = [d.call_type for d in data]
-	values = [d.count for d in data]
-	
-	if not labels:
-		labels = ["No Calls"]
-		values = [0]
-		
+
+	data.reverse()
 	return {
-		"labels": labels,
-		"datasets": [{"values": values}]
+		"labels": [d.month for d in data] if data else ["No Sales"],
+		"datasets": [{"name": "Sales Amount", "values": [float(d.total or 0) for d in data] if data else [0.0]}]
 	}

@@ -1,1 +1,13 @@
-frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['Agent Call Record History'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.agent_call_record_history.agent_call_record_history.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n
+frappe.provide('frappe.dashboards.chart_sources');
+
+frappe.dashboards.chart_sources['Agent Call Record History'] = {
+	method: 'customer_crm.customer_crm.dashboard_chart_source.agent_call_record_history.agent_call_record_history.get',
+	filters: [
+		{
+			fieldname: 'customer',
+			label: __('Customer'),
+			fieldtype: 'Link',
+			options: 'Customer',
+		}
+	],
+};

@@ -1,1 +1,1 @@
-# Purchased Items by Group Init\n
+# Purchased Items by Group Init

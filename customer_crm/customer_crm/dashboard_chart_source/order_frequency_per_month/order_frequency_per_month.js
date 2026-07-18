@@ -1,1 +1,13 @@
-frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['Order Frequency per Month'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.order_frequency_per_month.order_frequency_per_month.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n
+frappe.provide('frappe.dashboards.chart_sources');
+
+frappe.dashboards.chart_sources['Order Frequency per Month'] = {
+	method: 'customer_crm.customer_crm.dashboard_chart_source.order_frequency_per_month.order_frequency_per_month.get',
+	filters: [
+		{
+			fieldname: 'customer',
+			label: __('Customer'),
+			fieldtype: 'Link',
+			options: 'Customer',
+		}
+	],
+};

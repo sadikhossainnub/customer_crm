@@ -1,1 +1,1 @@
-# Omni Channel Links Ratio Init\n
+# Omni Channel Links Ratio Init

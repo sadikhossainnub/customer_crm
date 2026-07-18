@@ -1,19 +1,8 @@
 import frappe
 from frappe.utils import flt, cint
 
-
 @frappe.whitelist()
-def get(
-	chart_name=None,
-	chart=None,
-	no_cache=None,
-	filters=None,
-	from_date=None,
-	to_date=None,
-	timespan=None,
-	time_interval=None,
-	heatmap_year=None,
-):
+def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
 		try:
@@ -43,7 +32,7 @@ def get(
 		WHERE docstatus = 1 {where_clause}
 	""", values, as_dict=1)
 
-	if not min_max or not min_max[0].min_val:
+	if not min_max or min_max[0].min_val is None:
 		return {"labels": [], "datasets": []}
 
 	min_val = flt(min_max[0].min_val)
@@ -68,35 +57,37 @@ def get(
 	if bucket_width == 0:
 		bucket_width = 1
 
-	buckets = []
+	select_parts = []
+	query_values = dict(values)
+
 	for i in range(num_buckets):
 		low = min_val + (i * bucket_width)
 		high = low + bucket_width
-		buckets.append({
-			"low": low,
-			"high": high,
-			"bucket": f"৳{int(low)}-{int(high)}"
-		})
+		if i == num_buckets - 1:
+			high = max(high, max_val + 1)
+		query_values[f"low_{i}"] = low
+		query_values[f"high_{i}"] = high
+		select_parts.append(f"SUM(CASE WHEN grand_total >= %(low_{i})s AND grand_total < %(high_{i})s THEN 1 ELSE 0 END) as b_{i}")
+
+	select_sql = ", ".join(select_parts)
+	counts_data = frappe.db.sql(f"""
+		SELECT {select_sql}
+		FROM `tabSales Invoice`
+		WHERE docstatus = 1 {where_clause}
+	""", query_values, as_dict=1)
 
 	labels = []
 	values_list = []
 
-	for b in buckets:
-		val_conditions = list(conditions)
-		val_conditions.append("grand_total >= %(low)s")
-		val_conditions.append("grand_total < %(high)s")
-		val_where = " AND ".join(val_conditions)
-
-		count = frappe.db.sql(f"""
-			SELECT COUNT(name) as cnt
-			FROM `tabSales Invoice`
-			WHERE docstatus = 1 AND {val_where}
-		""", {**values, "low": b["low"], "high": b["high"]}, as_dict=1)
-
-		cnt = cint(count[0].cnt) if count else 0
-		if cnt > 0:
-			labels.append(b["bucket"])
-			values_list.append(cnt)
+	if counts_data:
+		row = counts_data[0]
+		for i in range(num_buckets):
+			cnt = cint(row.get(f"b_{i}"))
+			if cnt > 0:
+				low = min_val + (i * bucket_width)
+				high = low + bucket_width
+				labels.append(f"৳{int(low)}-{int(high)}")
+				values_list.append(cnt)
 
 	return {
 		"labels": labels,

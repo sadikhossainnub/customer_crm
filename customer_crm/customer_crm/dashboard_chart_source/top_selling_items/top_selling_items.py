@@ -1,20 +1,8 @@
 import frappe
 from frappe.utils import flt
 
-
 @frappe.whitelist()
-def get(
-	chart_name=None,
-	chart=None,
-	no_cache=None,
-	filters=None,
-	from_date=None,
-	to_date=None,
-	timespan=None,
-	time_interval=None,
-	heatmap_year=None,
-):
-	# Parse filters
+def get(chart_name=None, chart=None, filters=None, **kwargs):
 	if isinstance(filters, str):
 		import json
 		try:
@@ -24,10 +12,7 @@ def get(
 	elif not filters:
 		filters = {}
 
-	# If there's a dynamic customer filter (e.g. on Customer Dashboard)
 	customer = filters.get("customer") or filters.get("name")
-
-	# Query top selling items by amount
 	conditions = []
 	values = {}
 

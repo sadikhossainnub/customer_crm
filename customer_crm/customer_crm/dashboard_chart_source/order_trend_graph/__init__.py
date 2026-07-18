@@ -1,1 +1,1 @@
-# Order Trend Graph Init\n
+# Order Trend Graph Init

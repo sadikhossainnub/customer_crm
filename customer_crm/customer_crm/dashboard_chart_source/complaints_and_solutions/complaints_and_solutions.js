@@ -1,1 +1,13 @@
-frappe.provide('frappe.dashboards.chart_sources');\n\nfrappe.dashboards.chart_sources['Complaints and Solution History'] = {\n\tmethod: 'customer_crm.customer_crm.dashboard_chart_source.complaints_and_solutions.complaints_and_solutions.get',\n\tfilters: [\n\t\t{\n\t\t\tfieldname: 'customer',\n\t\t\tlabel: __('Customer'),\n\t\t\tfieldtype: 'Link',\n\t\t\toptions: 'Customer',\n\t\t}\n\t],\n};\n
+frappe.provide('frappe.dashboards.chart_sources');
+
+frappe.dashboards.chart_sources['Complaints and Solution History'] = {
+	method: 'customer_crm.customer_crm.dashboard_chart_source.complaints_and_solutions.complaints_and_solutions.get',
+	filters: [
+		{
+			fieldname: 'customer',
+			label: __('Customer'),
+			fieldtype: 'Link',
+			options: 'Customer',
+		}
+	],
+};

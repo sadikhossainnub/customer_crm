@@ -1,1 +1,1 @@
-# Customer Loyalty Points Init\n
+# Customer Loyalty Points Init
