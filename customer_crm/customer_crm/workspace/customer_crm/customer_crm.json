@@ -11,9 +11,13 @@
   {
    "chart_name": "Top Selling Items",
    "label": "Top Selling Items"
+  },
+  {
+   "chart_name": "Target vs Achievement",
+   "label": "Target vs Achievement"
   }
  ],
- "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"6-0HYh49EW\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Top Selling Items\",\"col\":6}},{\"id\":\"BKq3eWiY19\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Assigned Agent History Count\",\"col\":6}},{\"id\":\"7CCgiDXcMp\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Customer Call History Trend\",\"col\":12}},{\"id\":\"bq2QjnBKvw\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"xTqszZWKGP\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Monthly Total Call\",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gDOr5k_VO0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Agent Call Target\",\"col\":3}},{\"id\":\"EGvuaJWlxk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}},{\"id\":\"vjiPE6ew9q\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"oJTvTQrQY1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer CRM</span>\",\"col\":12}},{\"id\":\"6-0HYh49EW\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Top Selling Items\",\"col\":6}},{\"id\":\"BKq3eWiY19\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Assigned Agent History Count\",\"col\":6}},{\"id\":\"7CCgiDXcMp\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Customer Call History Trend\",\"col\":12}},{\"id\":\"FkctdHpWa9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Target vs Achievement\",\"col\":12}},{\"id\":\"bq2QjnBKvw\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"sJ4BFxyzNp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Call\",\"col\":4}},{\"id\":\"fLwwf3YmkY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Last 7 Days Call \",\"col\":4}},{\"id\":\"xTqszZWKGP\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Monthly Total Call\",\"col\":4}},{\"id\":\"vx3hs9nI1p\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gDOr5k_VO0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Agent Call Target\",\"col\":3}},{\"id\":\"EGvuaJWlxk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"8Hn1bUMIlj\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer CRM\",\"col\":4}},{\"id\":\"aNaLyTiCs1\",\"type\":\"card\",\"data\":{\"card_name\":\"Analytics\",\"col\":4}},{\"id\":\"vjiPE6ew9q\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-09-25 11:21:38.166183",
  "custom_blocks": [],
  "docstatus": 0,
@@ -143,7 +147,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-07-18 09:01:58.457048",
+ "modified": "2026-07-18 09:08:49.494916",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",

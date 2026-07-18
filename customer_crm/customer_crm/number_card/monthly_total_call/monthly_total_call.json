@@ -4,7 +4,7 @@
  "docstatus": 0,
  "doctype": "Number Card",
  "document_type": "Customer Call",
- "dynamic_filters_json": "{\"agent\": \"frappe.session.user\"}",
+ "dynamic_filters_json": "{\"agent\": \"frappe.user.has_role('System Manager') ? null : frappe.session.user\"}",
  "filters_json": "[[\"Customer Call\", \"call_date\", \"timespan\", \"this month\", false]]",
  "function": "Count",
  "idx": 0,
