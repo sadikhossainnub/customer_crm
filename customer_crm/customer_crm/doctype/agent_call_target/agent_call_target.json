@@ -1,7 +1,7 @@
 {
  "actions": [],
  "autoname": "custom",
- "creation": "2026-07-13 00:00:00.000000",
+ "creation": "2026-07-13 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -99,7 +99,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-13 00:00:00.000000",
+ "modified": "2026-07-19 02:12:00.758417",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Agent Call Target",
@@ -117,16 +117,6 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
-  },
-  {
-   "create": 1,
-   "read": 1,
-   "role": "Sales Manager",
-   "write": 1
-  },
-  {
-   "read": 1,
-   "role": "Sales User"
   }
  ],
  "row_format": "Dynamic",

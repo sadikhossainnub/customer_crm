@@ -60,15 +60,18 @@ frappe.ui.form.on('Customer Call', {
 		render_conversation_history(frm);
 		fetch_last_call_detail(frm);
 		if (frm.doc.customer) {
-			// Auto-fetch customer primary contact person for the main field
-			frappe.db.get_value('Customer', frm.doc.customer, 'customer_primary_contact')
-				.then(r => {
-					if (r.message && r.message.customer_primary_contact) {
-						frm.set_value('contact_person', r.message.customer_primary_contact);
-					} else {
-						frm.set_value('contact_person', '');
-					}
-				});
+			// Auto-fetch loyalty program, tier, and primary contact in one call
+			frappe.db.get_value('Customer', frm.doc.customer, [
+				'customer_primary_contact',
+				'loyalty_program',
+				'loyalty_program_tier'
+			]).then(r => {
+				if (r.message) {
+					frm.set_value('contact_person', r.message.customer_primary_contact || '');
+					frm.set_value('loyalty_program', r.message.loyalty_program || '');
+					frm.set_value('tire', r.message.loyalty_program_tier || '');
+				}
+			});
 
 			// Fetch all phone numbers
 			frappe.call({
@@ -100,6 +103,8 @@ frappe.ui.form.on('Customer Call', {
 			});
 		} else {
 			frm.set_value('contact_person', '');
+			frm.set_value('loyalty_program', '');
+			frm.set_value('tire', '');
 			frm.clear_table('phone');
 			frm.refresh_field('phone');
 		}

@@ -337,20 +337,18 @@ def get_customer_assignment(customer, check_date=None):
 			ca.name AS assignment_name,
 			caa.agent,
 			caa.agent_name,
-			cac.from_date AS customer_from,
-			cac.to_date AS customer_to,
-			caa.from_date AS agent_from,
-			caa.to_date AS agent_to
+			ca.from_date AS customer_from,
+			ca.to_date AS customer_to,
+			ca.from_date AS agent_from,
+			ca.to_date AS agent_to
 		FROM `tabCustomer Assignment` ca
 		JOIN `tabCustomer Assignment Customer` cac ON cac.parent = ca.name
 		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
 		WHERE cac.customer = %(customer)s
 		  AND ca.is_active = 1
-		  AND cac.from_date <= %(check_date)s
-		  AND cac.to_date >= %(check_date)s
-		  AND caa.from_date <= %(check_date)s
-		  AND caa.to_date >= %(check_date)s
-		ORDER BY cac.from_date DESC
+		  AND ca.from_date <= %(check_date)s
+		  AND ca.to_date >= %(check_date)s
+		ORDER BY ca.from_date DESC
 	""", {"customer": customer, "check_date": check_date}, as_dict=True)
 
 	return result
@@ -369,19 +367,17 @@ def get_agent_assigned_customers(agent=None, from_date=None, to_date=None):
 			cac.customer,
 			cac.customer_name,
 			ca.name AS assignment,
-			cac.from_date AS customer_from_date,
-			cac.to_date AS customer_to_date,
-			caa.from_date AS agent_from_date,
-			caa.to_date AS agent_to_date
+			ca.from_date AS customer_from_date,
+			ca.to_date AS customer_to_date,
+			ca.from_date AS agent_from_date,
+			ca.to_date AS agent_to_date
 		FROM `tabCustomer Assignment Customer` cac
 		JOIN `tabCustomer Assignment` ca ON ca.name = cac.parent
 		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
 		WHERE caa.agent      = %(agent)s
 		  AND ca.is_active  = 1
-		  AND cac.from_date  <= %(to_date)s
-		  AND cac.to_date    >= %(from_date)s
-		  AND caa.from_date  <= %(to_date)s
-		  AND caa.to_date    >= %(from_date)s
+		  AND ca.from_date  <= %(to_date)s
+		  AND ca.to_date    >= %(from_date)s
 		ORDER BY cac.customer_name
 	""", {"agent": agent, "from_date": from_date, "to_date": to_date}, as_dict=True)
 
@@ -402,14 +398,10 @@ def quick_assign_customer(customer, agent, from_date, to_date, notes=""):
 		"is_active": 1,
 		"notes": notes,
 		"agents": [{
-			"agent": agent,
-			"from_date": from_date,
-			"to_date": to_date
+			"agent": agent
 		}],
 		"customers": [{
-			"customer": customer,
-			"from_date": from_date,
-			"to_date": to_date
+			"customer": customer
 		}]
 	})
 	doc.insert(ignore_permissions=False)
@@ -450,17 +442,15 @@ def check_assignment_permission(doc, method=None):
 		SELECT
 			caa.agent,
 			caa.agent_name,
-			cac.from_date,
-			cac.to_date
+			ca.from_date,
+			ca.to_date
 		FROM `tabCustomer Assignment` ca
 		JOIN `tabCustomer Assignment Customer` cac ON cac.parent = ca.name
 		JOIN `tabCustomer Assignment Agent` caa ON caa.parent = ca.name
 		WHERE cac.customer = %(customer)s
 		  AND ca.is_active = 1
-		  AND cac.from_date <= %(check_date)s
-		  AND cac.to_date >= %(check_date)s
-		  AND caa.from_date <= %(check_date)s
-		  AND caa.to_date >= %(check_date)s
+		  AND ca.from_date <= %(check_date)s
+		  AND ca.to_date >= %(check_date)s
 	""", {"customer": customer, "check_date": check_date}, as_dict=True)
 
 	if not active_assignments:

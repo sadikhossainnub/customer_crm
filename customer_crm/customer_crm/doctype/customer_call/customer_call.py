@@ -37,6 +37,19 @@ def make_sales_order(source_name, target_doc=None):
 class CustomerCall(Document):
 	def validate(self):
 		self.set_next_follow_up_date()
+		self.fetch_loyalty_details()
+
+	def fetch_loyalty_details(self):
+		"""Auto-fetch Loyalty Program and Tier from the linked Customer."""
+		if self.customer:
+			loyalty_data = frappe.db.get_value(
+				"Customer", self.customer,
+				["loyalty_program", "loyalty_program_tier"],
+				as_dict=True
+			)
+			if loyalty_data:
+				self.loyalty_program = loyalty_data.loyalty_program or ""
+				self.tire = loyalty_data.loyalty_program_tier or ""
 
 	def set_next_follow_up_date(self):
 		if not self.next_follow_up_date and self.call_outcome:
@@ -60,6 +73,27 @@ class CustomerCall(Document):
 		if self.next_follow_up_date and self.agent:
 			self.create_follow_up_task()
 			self.send_notification()
+		self.update_customer_call_details()
+
+	def on_update(self):
+		self.update_customer_call_details()
+
+	def update_customer_call_details(self):
+		if self.customer:
+			latest_calls = frappe.get_all(
+				"Customer Call",
+				filters={"customer": self.customer},
+				fields=["call_date", "next_follow_up_date"],
+				order_by="call_date desc, creation desc",
+				limit=1
+			)
+			if latest_calls:
+				latest_call = latest_calls[0]
+				frappe.db.set_value("Customer", self.customer, {
+					"last_call_date": latest_call.call_date,
+					"next_follow_up": latest_call.next_follow_up_date
+				}, update_modified=False)
+
 	
 	def create_follow_up_task(self):
 		"""Create a follow-up task"""

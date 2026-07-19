@@ -1,0 +1,22 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Custom Field",
+  "dt": "Customer",
+  "fieldname": "last_call_date",
+  "fieldtype": "Date",
+  "insert_after": "customer_name",
+  "label": "Last Call Date",
+  "name": "Customer-last_call_date"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Custom Field",
+  "dt": "Customer",
+  "fieldname": "next_follow_up",
+  "fieldtype": "Date",
+  "insert_after": "last_call_date",
+  "label": "Next Follow-up",
+  "name": "Customer-next_follow_up"
+ }
+]

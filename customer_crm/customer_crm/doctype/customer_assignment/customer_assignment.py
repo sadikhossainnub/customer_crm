@@ -10,8 +10,6 @@ class CustomerAssignment(Document):
 
     def validate(self):
         self._validate_header_dates()
-        self._fill_default_dates()
-        self._validate_row_dates()
         self._validate_no_duplicate_agents()
         self._validate_no_duplicate_customers()
         self._validate_customer_conflicts()
@@ -24,38 +22,6 @@ class CustomerAssignment(Document):
             if getdate(self.from_date) > getdate(self.to_date):
                 frappe.throw("Default From Date cannot be greater than Default To Date.")
 
-    def _fill_default_dates(self):
-        """
-        If a row's from_date / to_date is empty, inherit from the header.
-        This makes adding a new row quick — just pick the agent/customer.
-        """
-        for row in self.agents:
-            if not row.from_date:
-                row.from_date = self.from_date
-            if not row.to_date:
-                row.to_date = self.to_date
-
-        for row in self.customers:
-            if not row.from_date:
-                row.from_date = self.from_date
-            if not row.to_date:
-                row.to_date = self.to_date
-
-    def _validate_row_dates(self):
-        """Every row's from_date must not exceed its to_date."""
-        for i, row in enumerate(self.agents, start=1):
-            if row.from_date and row.to_date:
-                if getdate(row.from_date) > getdate(row.to_date):
-                    frappe.throw(
-                        f"Agents row {i} ({row.agent}): From Date cannot exceed To Date."
-                    )
-
-        for i, row in enumerate(self.customers, start=1):
-            if row.from_date and row.to_date:
-                if getdate(row.from_date) > getdate(row.to_date):
-                    frappe.throw(
-                        f"Customers row {i} ({row.customer}): From Date cannot exceed To Date."
-                    )
 
     # ─── Duplicate guards ─────────────────────────────────────────────────────
 
@@ -98,8 +64,8 @@ class CustomerAssignment(Document):
                 SELECT
                     ca.name,
                     caa.agent,
-                    cac.from_date,
-                    cac.to_date
+                    ca.from_date,
+                    ca.to_date
                 FROM `tabCustomer Assignment` ca
                 JOIN `tabCustomer Assignment Agent`    caa ON caa.parent = ca.name
                 JOIN `tabCustomer Assignment Customer` cac ON cac.parent = ca.name
@@ -107,14 +73,14 @@ class CustomerAssignment(Document):
                   AND caa.agent     IN %(agents)s
                   AND ca.name      != %(self_name)s
                   AND ca.is_active  = 1
-                  AND cac.from_date <= %(to_date)s
-                  AND cac.to_date   >= %(from_date)s
+                  AND ca.from_date <= %(to_date)s
+                  AND ca.to_date   >= %(from_date)s
             """, {
                 "customer":  row.customer,
                 "agents":    list(my_agents),
                 "self_name": self.name or "__new__",
-                "from_date": row.from_date or self.from_date,
-                "to_date":   row.to_date   or self.to_date,
+                "from_date": self.from_date,
+                "to_date":   self.to_date,
             }, as_dict=True)
 
             if conflicts:

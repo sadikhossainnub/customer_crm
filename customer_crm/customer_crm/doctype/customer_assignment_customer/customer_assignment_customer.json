@@ -7,8 +7,6 @@
   "customer",
   "customer_name",
   "column_break_1",
-  "from_date",
-  "to_date",
   "notes"
  ],
  "fields": [
@@ -33,18 +31,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "from_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "From Date"
-  },
-  {
-   "fieldname": "to_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "To Date"
-  },
-  {
    "fieldname": "notes",
    "fieldtype": "Small Text",
    "label": "Notes"
@@ -60,7 +46,7 @@
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
- "sort_field": "from_date",
+ "sort_field": "name",
  "sort_order": "ASC",
  "states": []
 }

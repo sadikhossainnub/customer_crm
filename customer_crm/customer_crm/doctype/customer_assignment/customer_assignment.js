@@ -37,30 +37,3 @@ frappe.ui.form.on('Customer Assignment', {
 	}
 });
 
-// Row defaults for agents
-frappe.ui.form.on('Customer Assignment Agent', {
-	agents_add: function(frm, cdt, cdn) {
-		let row = frappe.get_doc(cdt, cdn);
-		if (frm.doc.from_date && !row.from_date) {
-			row.from_date = frm.doc.from_date;
-		}
-		if (frm.doc.to_date && !row.to_date) {
-			row.to_date = frm.doc.to_date;
-		}
-		frm.refresh_field('agents');
-	}
-});
-
-// Row defaults for customers
-frappe.ui.form.on('Customer Assignment Customer', {
-	customers_add: function(frm, cdt, cdn) {
-		let row = frappe.get_doc(cdt, cdn);
-		if (frm.doc.from_date && !row.from_date) {
-			row.from_date = frm.doc.from_date;
-		}
-		if (frm.doc.to_date && !row.to_date) {
-			row.to_date = frm.doc.to_date;
-		}
-		frm.refresh_field('customers');
-	}
-});
