@@ -60,9 +60,9 @@ doctype_js = {"Customer" : "public/js/customer.js"}
 # home_page = "login"
 
 # website user home page (by Role)
-role_home_page = {
-	"Sales User": "call-center"
-}
+#role_home_page = {
+#	"Sales User": "call-center"
+#}
 
 # Generators
 # ----------
@@ -139,7 +139,8 @@ after_install = "customer_crm.install.after_install"
 
 doc_events = {
 	"Customer Call": {
-		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission"
+		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission",
+		"after_save": "customer_crm.customer_crm.api.call_api.update_customer_call_fields"
 	},
 	"Sales Order": {
 		"validate": "customer_crm.customer_crm.api.call_api.check_assignment_permission"

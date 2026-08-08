@@ -255,6 +255,53 @@ def get_last_call_detail(customer, current_call=None):
 	return detail
 
 
+def update_customer_call_fields(doc, method=None):
+	"""After a Customer Call is saved/submitted, update the Customer's
+	last_call_date and next_follow_up custom fields."""
+	if not doc.customer:
+		return
+
+	try:
+		# Get the latest call date for this customer (including current doc)
+		latest = frappe.db.sql("""
+			SELECT call_date
+			FROM `tabCustomer Call`
+			WHERE customer = %s AND docstatus < 2
+			ORDER BY call_date DESC, call_time DESC
+			LIMIT 1
+		""", doc.customer)
+		last_call_date = latest[0][0] if latest else doc.call_date
+
+		# next_follow_up = next_follow_up_date from current doc (if set),
+		# otherwise keep the latest non-null next_follow_up_date across all calls
+		next_follow_up = None
+		if doc.next_follow_up_date:
+			next_follow_up = doc.next_follow_up_date
+		else:
+			future = frappe.db.sql("""
+				SELECT next_follow_up_date
+				FROM `tabCustomer Call`
+				WHERE customer = %s
+				  AND next_follow_up_date IS NOT NULL
+				  AND next_follow_up_date >= CURDATE()
+				  AND docstatus < 2
+				ORDER BY next_follow_up_date ASC
+				LIMIT 1
+			""", doc.customer)
+			next_follow_up = future[0][0] if future else None
+
+		frappe.db.set_value(
+			"Customer", doc.customer,
+			{
+				"last_call_date": last_call_date,
+				"next_follow_up": next_follow_up
+			},
+			update_modified=False
+		)
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "update_customer_call_fields failed")
+
+
 def find_customer_by_phone(phone):
 	"""Lookup Customer by phone number — checks Customer.mobile_no and Contact Phone child table"""
 	if not phone:
