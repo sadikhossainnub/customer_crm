@@ -6,19 +6,37 @@ frappe.ui.form.on('Customer Call', {
 		render_conversation_history(frm);
 		fetch_last_call_detail(frm);
 
-		// Click-to-Call via MicroSIP (sip: URI handler)
+		// ── Click-to-Call via MicroSIP (microsip: URI protocol) ──────────────
 		if (frm.fields_dict.phone && frm.fields_dict.phone.grid) {
-			frm.fields_dict.phone.grid.add_custom_button(__('📞 Call'), function() {
+			frm.fields_dict.phone.grid.add_custom_button(__('📞 Call via MicroSIP'), function() {
 				let selected = frm.fields_dict.phone.grid.get_selected_children();
-				if (selected.length) {
-					let number = selected[0].phone;
-					window.location.href = `sip:${number}`;
+				if (!selected.length) {
+					frappe.msgprint(__('Please select a phone number row first by clicking the checkbox.'));
+					return;
+				}
+				let number = selected[0].phone;
+				if (!number) {
+					frappe.msgprint(__('Selected row has no phone number.'));
+					return;
+				}
+				initiate_microsip_call(frm, number);
+			});
+		}
+
+		// ── Realtime listener: bridge script posts call completion ────────────
+		// Avoid registering duplicate listeners on each refresh
+		if (!frm._microsip_listener_registered) {
+			frm._microsip_listener_registered = true;
+			frappe.realtime.on('microsip_call_completed', function(data) {
+				if (data.call_name === frm.doc.name) {
+					let dur_min = Math.floor(data.duration / 60);
+					let dur_sec = data.duration % 60;
+					let dur_str = dur_min ? `${dur_min}m ${dur_sec}s` : `${dur_sec}s`;
 					frappe.show_alert({
-						message: __('Dialing {0} via MicroSIP...', [number]),
+						message: __('✅ Call completed! Duration: {0}. Please fill in the Outcome & Summary.', [dur_str]),
 						indicator: 'green'
-					}, 5);
-				} else {
-					frappe.msgprint(__('Please select a phone number row first.'));
+					}, 8);
+					frm.reload_doc();
 				}
 			});
 		}
@@ -53,6 +71,7 @@ frappe.ui.form.on('Customer Call', {
 				});
 			}, __('Reports'));
 		}
+
 
 	},
 	
@@ -228,4 +247,45 @@ function fetch_last_call_detail(frm) {
 	} else {
 		frm.set_value('last_call_detail', 'No customer selected');
 	}
+}
+
+// ── MicroSIP Click-to-Call handler ─────────────────────────────────────────
+// Flow: save record → mark Ringing via API → open microsip: URI
+async function initiate_microsip_call(frm, number) {
+	// Step 1: If record is new/unsaved, save it first so we have a real name
+	if (frm.is_new() || frm.is_dirty()) {
+		frappe.show_alert({ message: __('Saving record before dialing…'), indicator: 'blue' }, 3);
+		try {
+			await new Promise((resolve, reject) => {
+				frm.save('Save', resolve, null, reject);
+			});
+		} catch(e) {
+			frappe.msgprint(__('Could not save the record. Please fix any errors and try again.'));
+			return;
+		}
+	}
+
+	// Step 2: Mark call as Ringing in ERPNext (so bridge can match it later)
+	frappe.call({
+		method: 'customer_crm.customer_crm.api.call_api.mark_microsip_dial_start',
+		args: {
+			call_name: frm.doc.name,
+			phone_number: number
+		},
+		callback: function(r) {
+			if (r.exc) return; // error already shown by frappe
+
+			// Step 3: Open MicroSIP — Windows will handle the microsip: protocol
+			window.location.href = `microsip:${number}`;
+
+			frappe.show_alert({
+				message: __('📞 Dialing {0} via MicroSIP…', [number]),
+				indicator: 'green'
+			}, 6);
+
+			// Optimistically update the form fields so the user sees the state
+			frm.set_value('call_status', 'Ringing');
+			frm.set_value('call_direction', 'Outbound');
+		}
+	});
 }

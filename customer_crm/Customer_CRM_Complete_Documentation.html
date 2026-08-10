@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Customer CRM - Comprehensive Documentation</title>
+<style>
+    @page {
+        size: A4;
+        margin: 18mm 15mm;
+        @bottom-right {
+            content: "Page " counter(page) " of " counter(pages);
+        }
+    }
+    body {
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+    }
+    .cover {
+        text-align: center;
+        padding: 60px 20px 40px 20px;
+        border-bottom: 4px solid #1e40af;
+        margin-bottom: 30px;
+    }
+    .cover-title {
+        color: #1e3a8a;
+        font-size: 28pt;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+    .cover-subtitle {
+        color: #475569;
+        font-size: 14pt;
+        margin-bottom: 20px;
+    }
+    .cover-meta {
+        font-size: 10pt;
+        color: #64748b;
+        background: #f1f5f9;
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    h1 {
+        color: #0f172a;
+        font-size: 18pt;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 6px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        page-break-after: avoid;
+    }
+    h2 {
+        color: #1e40af;
+        font-size: 14pt;
+        margin-top: 22px;
+        margin-bottom: 10px;
+        page-break-after: avoid;
+    }
+    h3 {
+        color: #334155;
+        font-size: 11.5pt;
+        margin-top: 15px;
+        margin-bottom: 6px;
+        page-break-after: avoid;
+    }
+    p, li {
+        font-size: 10pt;
+        color: #334155;
+    }
+    ul, ol {
+        margin-top: 4px;
+        margin-bottom: 12px;
+        padding-left: 22px;
+    }
+    li {
+        margin-bottom: 5px;
+    }
+    .card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #2563eb;
+        border-radius: 6px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        page-break-inside: avoid;
+    }
+    .card-title {
+        font-weight: 700;
+        color: #1e3a8a;
+        font-size: 11pt;
+        margin-bottom: 5px;
+    }
+    .diagram-box {
+        background: #0f172a;
+        color: #38bdf8;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 15px 0;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 9.5pt;
+        line-height: 1.45;
+        page-break-inside: avoid;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 9.5pt;
+        page-break-inside: avoid;
+    }
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 11px;
+        text-align: left;
+    }
+    th {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        font-weight: 700;
+    }
+    tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+    .badge-blue {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 8.5pt;
+        font-weight: bold;
+    }
+    .badge-green {
+        background: #dcfce7;
+        color: #166534;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 8.5pt;
+        font-weight: bold;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+    .footer {
+        margin-top: 40px;
+        border-top: 1px solid #cbd5e1;
+        padding-top: 10px;
+        font-size: 8.5pt;
+        color: #94a3b8;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<div class="cover">
+    <div class="cover-title">Customer CRM App</div>
+    <div class="cover-subtitle">Complete Architecture, Workflow & Technical User Documentation</div>
+    <div class="cover-meta">ERPNext / Frappe App • Publisher: PrimeTechBD • Version 1.0</div>
+</div>
+
+<h1>১. পরিচিতি (Module Overview)</h1>
+<p>
+    <strong>Customer CRM</strong> হলো Frappe / ERPNext ফ্রেমওয়ার্কের ওপর নির্মিত একটি শক্তিশালী এবং সর্বাঙ্গীন কাস্টমার কল ম্যানেজমেন্ট, ফলো-আপ ট্র্যাকিং, টার্গেট অ্যানালাইসিস এবং টেলিপোনি ইন্টিগ্রেশন সলিউশন। 
+</p>
+<p>
+    এই মডিউলটির প্রধান লক্ষ্য হলো সেলস এবং কাস্টমার সাপোর্ট টিমের কাজের গতি বৃদ্ধি করা, কলের সঠিক হিসেব রাখা, টেলিফোনি (MicroSIP / Asterisk PBX) ইন্টিগ্রেশন নিশ্চিত করা এবং টার্গেট অনুযায়ী এজেন্টদের পারফরম্যান্স পর্যালোচনা করা।
+</p>
+
+<div class="card">
+    <div class="card-title">💡 প্রধান সুবিধাসমূহ (Key Features)</div>
+    <ul>
+        <li><strong>কাস্টমার কল ট্র্যাকিং (Customer Call Logs):</strong> প্রতি কাস্টমারের সাথে কথা বলা, ফলাফল (Outcome), সময়কাল, আগের কলের হিস্ট্রি প্রদর্শন।</li>
+        <li><strong>সরাসরি সেলস অর্ডার তৈরি:</strong> কল পেজ থেকে সরাসরি এক ক্লিকে Sales Order তৈরি।</li>
+        <li><strong>কাস্টমার অ্যাসাইনমেন্ট সিস্টেম (Customer Assignment):</strong> নির্দিষ্ট কাস্টমারকে নির্দিষ্ট এজেন্টের সাথে ট্যাগ করা ও সিকিউরিটি পারমিশন নিয়ন্ত্রণ।</li>
+        <li><strong>টেলিফোনি ও MicroSIP ইন্টিগ্রেশন:</strong> Click-to-Call, অটোমেটিক ডায়ালিং, ব্যাকগ্রাউন্ড কল ডিউরেশন সিঙ্ক এবং স্ক্রিন পপ-আপ।</li>
+        <li><strong>টার্গেট বনাম অর্জন (Target vs Actual):</strong> এজেন্টদের দৈনিক ও সাপ্তাহিক কলের টার্গেট সেট করা এবং রিয়েল-টাইম প্রোগ্রেস বার।</li>
+        <li><strong>স্বয়ংক্রিয় ব্যাকগ্রাউন্ড ইমেইল ও রিমাইন্ডার (Automated Daily Tasks):</strong> বকেয়া ফলো-আপ সমূহের ইমেইল সামারি এবং সিস্টেম অ্যালার্ট।</li>
+    </ul>
+</div>
+
+<h1>২. কোড স্ট্রাকচার ও ডকটাইপ সমূহ (DocTypes & Components)</h1>
+
+<table>
+    <tr>
+        <th>ডকটাইপ / কম্পোনেন্ট</th>
+        <th>টাইপ</th>
+        <th>কাজ ও বিবরণ</th>
+    </tr>
+    <tr>
+        <td><code>Customer Call</code></td>
+        <td>Standard DocType</td>
+        <td>কলের বিস্তারিত তথ্য (Customer, Agent, Date, Outcome, Duration, Summary, Phone table, Sales Order link) সংরক্ষণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>Customer Call Phone</code></td>
+        <td>Child Table</td>
+        <td>কাস্টমার এবং কন্টাক্ট পারসনের একাধিক মোবাইল নম্বর ও চিহ্নিত করা ডায়ালড নম্বর সংরক্ষণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>Call Outcome</code></td>
+        <td>Master DocType</td>
+        <td>কলের ফলাফল (যেমন: Interested, Callback Required, Not Interested) এবং ফলো-আপের দিন সংখ্যা নির্ধারণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>Agent Call Target</code></td>
+        <td>Standard DocType</td>
+        <td>এজেন্টদের জন্য দৈনন্দিন ও সাপ্তাহিক কল সংখ্যা এবং Interested Outcomes-এর লক্ষ্যমাত্রা নির্ধারণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>Customer Assignment</code></td>
+        <td>Master DocType</td>
+        <td>নির্দিষ্ট মেয়াদের জন্য কাস্টমার ও এজেন্ট ট্যাগিং তৈরি করে পারমিশন নিয়ন্ত্রণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>Telephony Settings</code></td>
+        <td>Single DocType</td>
+        <td>PBX (AMI) কনফিগারেশন, MicroSIP এনাবল চেকবক্স এবং Bridge App ডাউনলোড অ্যাকশন পরিচালনা করে।</td>
+    </tr>
+    <tr>
+        <td><code>Call Dashboard</code></td>
+        <td>Custom Page / Dashboard</td>
+        <td>এজেন্টদের টার্গেট বনাম অর্জনের বার চার্ট এবং অ্যানালিটিকস প্রদর্শন করে।</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h1>৩. মডিউল ওয়ার্কফ্লো (Core Workflows)</h1>
+
+<h2>৩.১ কাস্টমার কল রেকর্ড ও ফলো-আপ ফ্লো</h2>
+<div class="diagram-box">
+১. Customer Call ডকটাইপ খুলুন ➔ কাস্টমার নির্বাচন করুন।
+   ├── কাস্টমারের পূর্বের কল ইতিহাস (Conversation History) অটো লোড হবে।
+   └── কাস্টমারের সব মোবাইল নম্বর Phone Table-এ চলে আসবে।
+২. "📞 Call via MicroSIP" বাটনে চাপ দিন।
+   ├── রেকর্ডটি Save হবে এবং Status = "Ringing" সেট হবে।
+   └── MicroSIP Softphone চালু হয়ে ডায়াল করবে।
+৩. কল শেষে MicroSIP Bridge সার্ভিস ব্যাকগ্রাউন্ডে কল ডিউরেশন সেভ করবে।
+৪. Agent কলের সারসংক্ষেপ (Conversation Summary) ও Call Outcome নির্বাচন করবেন।
+   └── Outcome অনুযায়ী Next Follow-up Date নিজে থেকেই হিসাব হয়ে বসবে এবং ToDo তৈরি হবে।
+</div>
+
+<h2>৩.২ কাস্টমার অ্যাসাইনমেন্ট ও সিকিউরিটি রুল</h2>
+<p>
+    Customer CRM মডিউলে অ্যাসাইনমেন্ট সিকিউরিটি চালু আছে:
+</p>
+<ul>
+    <li>যদি কোনো কাস্টমার <code>Customer Assignment</code>-এর মাধ্যমে নির্দিষ্ট এজেন্টদের অ্যাসাইন করা থাকে, তবে কেবল ঐ এজেন্ট এবং System Manager-রা তার জন্য Call Record, Follow-up, বা Sales Order তৈরি করতে পারবেন।</li>
+    <li>অন্য কোনো এজেন্ট উক্ত কাস্টমারের সাথে লেনদেন বা কল রেকর্ড করতে গেলে সিস্টেম পারমিশন এরর দেখাবে।</li>
+</ul>
+
+<h1>৪. MicroSIP ও টেলিপোনি ইন্টিগ্রেশন (Telephony Architecture)</h1>
+
+<p>
+    MicroSIP ইন্টিগ্রেশনটি ৩টি অংশে কাজ করে:
+</p>
+<ol>
+    <li><strong>ERPNext UI (Client):</strong> <code>customer_call.js</code> ফাইলটি <code>microsip:PHONE</code> প্রোটোকল দিয়ে সফ্টফোন ওপেন করে এবং WebSocket-এর মাধ্যমে লাইভ আপডেট গ্রহণ করে।</li>
+    <li><strong>Windows Bridge App (Desktop Service):</strong> <code>microsip_bridge.pyw</code> ব্যাকগ্রাউন্ড ফাইল যা MicroSIP-এর <code>history.xml</code> ওয়াচ করে এবং কল শেষ হওয়ামাত্র ডেটা সার্ভারে পাঠায়।</li>
+    <li><strong>ERPNext API Webhooks (Server):</strong> <code>call_api.py</code>-এর <code>mark_microsip_dial_start</code> এবং <code>update_call_from_microsip</code> মেথড দুটি কল সিঙ্ক নিশ্চিত করে।</li>
+</ol>
+
+<div class="diagram-box">
+[ Customer Call Form ] ──(Click Call)──► [ MicroSIP Softphone ]
+          │                                      │
+  (Set Status = Ringing)                    (Saves duration in history.xml)
+          ▼                                      ▼
+[ ERPNext Server ] ◄──(HTTPS POST API)─── [ Windows Bridge Service ]
+          │
+  (Pushes Realtime Event)
+          ▼
+[ Browser Auto-Reloads & Shows Duration Toast! ]
+</div>
+
+<h1>৫. স্বয়ংক্রিয় ব্যাকগ্রাউন্ড টাস্ক (Scheduled Tasks)</h1>
+
+<p><code>customer_crm/tasks.py</code> ফাইলে ৩টি গুরুত্বপূর্ণ ব্যাকগ্রাউন্ড জব রয়েছে:</p>
+
+<table>
+    <tr>
+        <th>টাস্কের নাম</th>
+        <th>ফ্রিকোয়েন্সি</th>
+        <th>কাজ ও বিবরণ</th>
+    </tr>
+    <tr>
+        <td><code>send_daily_followup_reminders</code></td>
+        <td>দৈনিক (Daily)</td>
+        <td>আগামীকাল যেসব কাস্টমার ফলো-আপ বকেয়া আছে, সংশ্লিষ্ট এজেন্টের ইমেইলে রিমাইন্ডার নোটিফিকেশন পাঠায়।</td>
+    </tr>
+    <tr>
+        <td><code>send_today_followup_summary</code></td>
+        <td>দৈনিক (Daily)</td>
+        <td>আজকে যেসব কাস্টমারকে কল করা প্রয়োজন, তার সম্পূর্ণ তালিকা দিয়ে সকালে প্রতিটি এজেন্টকে ইমেইল ও ইন-অ্যাপ সামারি পাঠায়।</td>
+    </tr>
+    <tr>
+        <td><code>notify_unmatched_auto_calls</code></td>
+        <td>প্রতি ঘণ্টা (Hourly)</td>
+        <td>সিস্টেমে অটো-লগ হওয়া কিন্তু কাস্টমার কন্টাক্ট মেলেনি এমন কলগুলো রিভিউ করার জন্য System Manager-দের সতর্ক করে।</td>
+    </tr>
+</table>
+
+<h1>৬. রিপোর্ট ও ড্যাশবোর্ড (Reports & Analytics)</h1>
+<ul>
+    <li><strong>Call Target vs Actual Report:</strong> এজেন্টের পারফরম্যান্স, অর্জিত টার্গেট শতাংশ এবং বাকি টার্গেটের লাইভ রিপোর্ট।</li>
+    <li><strong>Call Summary Report:</strong> নির্দিষ্ট তারিখ অনুযায়ী আউটকাম, ডিউরেশন এবং কল সংখ্যার বিশদ বিবরণ।</li>
+    <li><strong>Customer Purchase Analysis:</strong> ফলো-আপ পরবর্তী সেলস কনভার্সন এবং ক্রয় সংক্রান্ত বিশ্লেষণ।</li>
+</ul>
+
+<div class="footer">
+    Customer CRM Module • Official Technical Documentation • Generated for ERPNext Bench
+</div>
+
+</body>
+</html>

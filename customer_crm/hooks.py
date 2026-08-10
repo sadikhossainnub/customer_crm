@@ -43,8 +43,13 @@ app_include_js = "/assets/customer_crm/js/customer_crm.js"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Customer" : "public/js/customer.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_js = {
+	"Customer": "public/js/customer.js",
+	"Telephony Settings": "public/js/telephony_settings.js"
+}
+doctype_list_js = {
+	"Telephony Settings": "public/js/telephony_settings_list.js"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

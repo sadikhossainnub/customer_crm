@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>MicroSIP ERPNext Bridge Documentation</title>
+<style>
+    @page {
+        size: A4;
+        margin: 20mm;
+    }
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+    }
+    .header {
+        border-bottom: 3px solid #2563eb;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+    .title {
+        color: #1e3a8a;
+        font-size: 24pt;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+    }
+    .subtitle {
+        color: #64748b;
+        font-size: 13pt;
+        margin: 0;
+    }
+    .badge {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 9pt;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    h2 {
+        color: #1e40af;
+        font-size: 15pt;
+        border-left: 4px solid #2563eb;
+        padding-left: 10px;
+        margin-top: 25px;
+        margin-bottom: 12px;
+    }
+    h3 {
+        color: #334155;
+        font-size: 12pt;
+        margin-top: 15px;
+        margin-bottom: 8px;
+    }
+    p, li {
+        font-size: 10.5pt;
+    }
+    ul, ol {
+        margin-top: 5px;
+        padding-left: 20px;
+    }
+    li {
+        margin-bottom: 6px;
+    }
+    .diagram-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+        font-family: monospace;
+        font-size: 10pt;
+        color: #0f172a;
+    }
+    .flow-step {
+        background: #f1f5f9;
+        border-left: 3px solid #3b82f6;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+        border-radius: 0 6px 6px 0;
+    }
+    .flow-step strong {
+        color: #1d4ed8;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 10pt;
+    }
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    th {
+        background-color: #f1f5f9;
+        color: #1e293b;
+    }
+    .footer {
+        margin-top: 35px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 12px;
+        font-size: 9pt;
+        color: #94a3b8;
+        text-align: center;
+    }
+    .highlight {
+        background: #fef3c7;
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title">MicroSIP ➔ ERPNext Bridge</div>
+    <div class="subtitle">Complete Technical & Operational System Documentation</div>
+    <div class="badge">Version 2.0 • Silent Windows GUI Service</div>
+</div>
+
+<h2>১. পরিচিতি ও উদ্দেশ্য (Overview)</h2>
+<p>
+    <strong>MicroSIP ERPNext Bridge</strong> হলো একটি উইন্ডোজ নির্ভর সফটওয়্যার ইন্টারফেস, যা আপনার ডেস্কটপ কম্পিউটারে চলা <strong>MicroSIP Softphone</strong> এর সাথে <strong>ERPNext Customer CRM</strong> এর সরাসরি যোগাযোগ স্থাপন করে।
+</p>
+<p>
+    এর মাধ্যমে ইউজার ERPNext থেকে এক ক্লিকে কল করতে পারেন এবং কল শেষ হওয়া মাত্র কলের <strong>Duration (সময়কাল)</strong> ও <strong>Status (Completed/Missed)</strong> সম্পূর্ণ স্বয়ংক্রিয়ভাবে ERPNext-এ সংরক্ষণ হয়ে যায়।
+</p>
+
+<h2>২. সিস্টেম আর্কিটেকচার (Architecture Diagram)</h2>
+<div class="diagram-box">
+[ ERPNext Browser UI ] <br>
+   │ <br>
+   ├── 1. Click "📞 Call via MicroSIP" <br>
+   │    └── Sets Call Status = "Ringing" & Direction = "Outbound" via API <br>
+   │ <br>
+   ▼ <br>
+[ MicroSIP Desktop Softphone ] <br>
+   │ <br>
+   ├── 2. Opens & Dials Customer Phone Number <br>
+   └── 3. Call ends -> Saves record in %APPDATA%\MicroSIP\history.xml <br>
+   │ <br>
+   ▼ <br>
+[ MicroSIP Bridge (Silent Windows Background Service) ] <br>
+   │ <br>
+   ├── 4. Detects new entry in history.xml <br>
+   └── 5. POSTs Call Duration & ID to ERPNext API (update_call_from_microsip) <br>
+   │ <br>
+   ▼ <br>
+[ ERPNext Server ] ➔ Updates Customer Call Record ➔ Triggers Realtime UI Auto-Reload!
+</div>
+
+<h2>৩. কল ডায়ালিং ও সিঙ্ক প্রসেস (Step-by-Step Workflow)</h2>
+
+<div class="flow-step">
+    <strong>ধাপ ১: Click-to-Call সূচনা</strong><br>
+    ERPNext-এ Customer Call ফর্মে কোনো ফোন নম্বরের পাশে "📞 Call via MicroSIP" বাটনে চাপ দিলে সিস্টেম আগে রেকর্ডটি সেভ করে এবং ERPNext-এ কলটির স্ট্যাটাস <code>Ringing</code> ও ডিরেকশন <code>Outbound</code> সেট করে।
+</div>
+
+<div class="flow-step">
+    <strong>ধাপ ২: MicroSIP অটোমেটিক ডায়ালিং</strong><br>
+    ব্রাউজার থেকে <code>microsip:PHONE_NUMBER</code> হ্যান্ডলার ট্রিগার হয়ে আপনার পিসির MicroSIP সফটফোন অন হয়ে কল ডায়াল করা শুরু করে।
+</div>
+
+<div class="flow-step">
+    <strong>ধাপ ৩: উইন্ডোজ ব্যাকগ্রাউন্ড পর্যবেক্ষণ</strong><br>
+    MicroSIP সফটফোন কল শেষ হওয়া মাত্র <code>%APPDATA%\MicroSIP\history.xml</code> ফাইলে কলের ডিউরেশন সেভ করে। ব্যাকগ্রাউন্ডে চলা <code>microsip_bridge.pyw</code> সার্ভিসটি রিয়েল-টাইমে এই পরিবর্তন সনাক্ত করে।
+</div>
+
+<div class="flow-step">
+    <strong>ধাপ ৪: ERPNext এপিআই সিঙ্ক</strong><br>
+    ব্রিজ সার্ভিসটি সিকিউর API Key এবং Secret ব্যবহার করে ERPNext-এর <code>update_call_from_microsip</code> মেথডে ডেটা পাঠায়। সার্ভার উক্ত নম্বরের বিপরীতে থাকা <code>Ringing</code> কল রেকর্ডটি খুঁজে তার Duration এবং Status আপডেট করে দেয়।
+</div>
+
+<div class="flow-step">
+    <strong>ধাপ ৫: ব্রাউজার রিয়েল-টাইম নোটিফিকেশন</strong><br>
+    কল আপডেট সম্পন্ন হওয়া মাত্র ইউজার যে ব্রাউজারে কাজ করছিলেন সেখানে একটি গ্রীন নোটিফিকেশন টোস্ট ভেসে ওঠে এবং পেজটি অটো-রিফ্রেশ হয়ে সময়কাল দেখায়।
+</div>
+
+<h2>৪. ফাইল ও কম্পোনেন্ট বিবরণ (System Components)</h2>
+<table>
+    <tr>
+        <th>ফাইল/কম্পোনেন্ট</th>
+        <th>ধরন</th>
+        <th>কাজ ও বিবরণ</th>
+    </tr>
+    <tr>
+        <td><code>microsip_bridge.pyw</code></td>
+        <td>Python Application</td>
+        <td>GUI কনফিগারেশন উইন্ডো এবং সাইলেন্ট ব্যাকগ্রাউন্ড থ্রেড রান করে।</td>
+    </tr>
+    <tr>
+        <td><code>install.bat</code></td>
+        <td>Windows Installer</td>
+        <td>প্রয়োজনীয় লাইব্রেরি ইনস্টল করে এবং উইন্ডোজ স্টার্টআপে সাইলেন্ট সার্ভিস রেজিস্টার করে।</td>
+    </tr>
+    <tr>
+        <td><code>call_api.py</code></td>
+        <td>ERPNext Backend API</td>
+        <td><code>mark_microsip_dial_start</code> ও <code>update_call_from_microsip</code> এপিআই প্রদান করে।</td>
+    </tr>
+    <tr>
+        <td><code>customer_call.js</code></td>
+        <td>ERPNext Frontend JS</td>
+        <td>Click-to-call লজিক পরিচালনা করে এবং রিয়েল-টাইম সকেট ইভেন্ট গ্রহণ করে।</td>
+    </tr>
+    <tr>
+        <td><code>telephony_settings_list.js</code></td>
+        <td>List View Script</td>
+        <td>Telephony Settings লিস্ট পেজে Direct Download বোতাম প্রদর্শন করে।</td>
+    </tr>
+</table>
+
+<h2>৫. ইনস্টলেশন ও ব্যবহার পদ্ধতি (User Guide)</h2>
+<ol>
+    <li>ERPNext-এর <strong>Telephony Settings List View</strong> (<code>/desk/telephony-settings</code>) থেকে <strong>⬇️ Download MicroSIP Bridge App</strong> বাটনে ক্লিক করে Zip ফাইলটি ডাউনলোড করুন।</li>
+    <li>Zip ফাইলটি আনজিপ করে <code>install.bat</code> ফাইলেই ডাবল-ক্লিক করুন।</li>
+    <li>স্ক্রিনে সেটিংস উইন্ডো আসলে আপনার ERPNext URL (<code>https://erp.dressup.com.bd</code>), API Key এবং Secret দিন।</li>
+    <li><strong>Auto Detect MicroSIP Path</strong> চাপুন এবং <strong>🔌 Test Connection</strong> দিয়ে ভেরিফাই করুন।</li>
+    <li><strong>💾 Save & Run in Background</strong> চাপুন। এটি উইন্ডোজের সাথে অটোমেটিক চালু থাকবে।</li>
+</ol>
+
+<div class="footer">
+    MicroSIP ➔ ERPNext Bridge Documentation • Developed for Customer CRM Module • Confidential
+</div>
+
+</body>
+</html>

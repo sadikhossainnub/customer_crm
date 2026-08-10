@@ -369,6 +369,158 @@ def notify_incoming_call(from_number, agent_ext):
 
 
 # ────────────────────────────────────────────────────────────
+#  MicroSIP Click-to-Call APIs
+# ────────────────────────────────────────────────────────────
+
+@frappe.whitelist(allow_guest=False)
+def mark_microsip_dial_start(call_name, phone_number):
+	"""Called by browser when user clicks '📞 Call via MicroSIP'.
+	Marks the Customer Call record as Outbound/Ringing so the bridge
+	script can match it after the call ends."""
+	doc = frappe.get_doc("Customer Call", call_name)
+	frappe.has_permission("Customer Call", "write", doc=doc, throw=True)
+
+	frappe.db.set_value("Customer Call", call_name, {
+		"call_status":    "Ringing",
+		"call_direction": "Outbound",
+		"call_time":      frappe.utils.now_datetime().strftime("%H:%M:%S"),
+	}, update_modified=True)
+	frappe.db.commit()
+	return {"status": "ok", "call_name": call_name, "number": phone_number}
+
+
+@frappe.whitelist(allow_guest=False)
+def update_call_from_microsip(phone_number, duration, call_time_unix, call_id=None, direction=None, status=None):
+	"""Called by the Windows bridge script (microsip_bridge.py) after a call ends.
+
+	Authentication: standard Frappe API Key + Secret (token auth).
+	The bridge script user must have write permission on Customer Call.
+
+	Matching logic:
+	  1. Find the most recent Customer Call with call_status='Ringing',
+	     call_direction='Outbound', modified within the last 2 hours,
+	     where the dialed number appears in the phone child table.
+	  2. Fallback: match via Customer.mobile_no.
+
+	On match: updates duration, status, call_id and fires a realtime
+	event so the agent's browser reloads automatically.
+	"""
+	settings = frappe.get_single("Telephony Settings")
+	if not settings.enable_microsip:
+		return {"status": "disabled", "message": "MicroSIP logging is disabled in Telephony Settings"}
+
+	duration    = int(duration or 0)
+	call_id_str = str(call_id) if call_id else None
+	resolved_status = "Completed" if duration > 0 else "Missed"
+
+	# Duplicate guard — skip if this call_id was already processed
+	if call_id_str and frappe.db.exists("Customer Call", {"call_id": call_id_str}):
+		return {"status": "duplicate", "message": "Call already logged"}
+
+	# Build a threshold: only match calls that were marked Ringing in the last 2 hours
+	from frappe.utils import now_datetime, add_to_date
+	two_hours_ago = add_to_date(now_datetime(), hours=-2)
+
+	# ── Attempt 1: match via Customer Call Phone child table ───────────────
+	row = frappe.db.sql("""
+		SELECT cc.name, cc.agent
+		FROM   `tabCustomer Call` cc
+		JOIN   `tabCustomer Call Phone` ccp ON ccp.parent = cc.name
+		WHERE  ccp.phone       = %(phone)s
+		  AND  cc.call_status  = 'Ringing'
+		  AND  cc.call_direction = 'Outbound'
+		  AND  cc.modified     >= %(threshold)s
+		ORDER  BY cc.modified DESC
+		LIMIT  1
+	""", {"phone": phone_number, "threshold": two_hours_ago}, as_dict=True)
+
+	# ── Attempt 2: fallback via Customer.mobile_no ─────────────────────────
+	if not row:
+		row = frappe.db.sql("""
+			SELECT cc.name, cc.agent
+			FROM   `tabCustomer Call` cc
+			JOIN   `tabCustomer` c  ON c.name = cc.customer
+			WHERE  c.mobile_no      = %(phone)s
+			  AND  cc.call_status   = 'Ringing'
+			  AND  cc.call_direction = 'Outbound'
+			  AND  cc.modified      >= %(threshold)s
+			ORDER  BY cc.modified DESC
+			LIMIT  1
+		""", {"phone": phone_number, "threshold": two_hours_ago}, as_dict=True)
+
+	if not row:
+		frappe.log_error(
+			f"MicroSIP bridge: no matching Ringing call found for number '{phone_number}'. "
+			f"call_id={call_id_str}, duration={duration}s",
+			"MicroSIP Bridge – Unmatched Call"
+		)
+		return {"status": "no_match", "phone": phone_number}
+
+	matched_name  = row[0]["name"]
+	matched_agent = row[0]["agent"]
+
+	# Update the call record
+	update_values = {
+		"call_duration": duration,
+		"call_status":   resolved_status,
+		"is_auto_logged": 1,
+	}
+	if call_id_str:
+		update_values["call_id"] = call_id_str
+
+	frappe.db.set_value("Customer Call", matched_name, update_values, update_modified=True)
+	frappe.db.commit()
+
+	# Push realtime event → browser auto-reloads and shows toast notification
+	frappe.publish_realtime(
+		"microsip_call_completed",
+		{"call_name": matched_name, "duration": duration, "status": resolved_status},
+		user=matched_agent
+	)
+
+	return {
+		"status":    "ok",
+		"call_name": matched_name,
+		"duration":  duration,
+		"call_status": resolved_status,
+	}
+
+
+@frappe.whitelist()
+def download_microsip_bridge():
+	"""Zips the microsip_bridge folder dynamically and triggers browser file download."""
+	import os, zipfile, io
+	app_path = frappe.get_app_path("customer_crm")
+	bridge_dir = os.path.abspath(os.path.join(app_path, "..", "microsip_bridge"))
+
+	if not os.path.exists(bridge_dir):
+		bridge_dir = os.path.join(app_path, "microsip_bridge")
+
+	if not os.path.exists(bridge_dir):
+		frappe.throw("MicroSIP Bridge folder not found on server.")
+
+	zip_buffer = io.BytesIO()
+	with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+		for root, dirs, files in os.walk(bridge_dir):
+			# Skip __pycache__ and git dirs
+			dirs[:] = [d for d in dirs if d not in ("__pycache__", ".git")]
+			for file in files:
+				if file.endswith((".log", ".pyc")) or file in ("sent_calls.json", "config.ini"):
+					continue
+				file_path = os.path.join(root, file)
+				arcname = os.path.relpath(file_path, bridge_dir)
+				zip_file.write(file_path, os.path.join("microsip_bridge", arcname))
+
+	zip_buffer.seek(0)
+	frappe.response['filename'] = 'microsip_bridge.zip'
+	frappe.response['filecontent'] = zip_buffer.getvalue()
+	frappe.response['type'] = 'download'
+
+
+
+
+
+# ────────────────────────────────────────────────────────────
 #  Customer Assignment APIs
 # ────────────────────────────────────────────────────────────
 

@@ -1,0 +1,16 @@
+[erpnext]
+; Your ERPNext site URL (no trailing slash)
+url = https://your-site.com
+
+; Frappe API credentials — go to ERPNext > Settings > My Profile > API Access
+; Create a new API Key + Secret for the agent user (or a dedicated bridge user)
+api_key    = PASTE_YOUR_API_KEY_HERE
+api_secret = PASTE_YOUR_API_SECRET_HERE
+
+[microsip]
+; Full path to MicroSIP's history.xml file
+; Default location (replace YourName with your Windows username):
+history_file = C:\Users\YourName\AppData\Roaming\MicroSIP\history.xml
+
+; How often to check for new calls (seconds)
+poll_interval = 3

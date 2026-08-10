@@ -11,7 +11,9 @@
         "column_break_1",
         "asterisk_context",
         "recording_path",
-        "enable_auto_logging"
+        "enable_auto_logging",
+        "section_break_microsip",
+        "enable_microsip"
     ],
     "fields": [
         {
@@ -58,12 +60,24 @@
             "fieldtype": "Check",
             "label": "Enable Auto Logging",
             "description": "When enabled, PBX webhook will automatically create Customer Call records"
+        },
+        {
+            "fieldname": "section_break_microsip",
+            "fieldtype": "Section Break",
+            "label": "MicroSIP Integration"
+        },
+        {
+            "default": "1",
+            "fieldname": "enable_microsip",
+            "fieldtype": "Check",
+            "label": "Enable MicroSIP Logging",
+            "description": "Allow the MicroSIP Windows bridge script to update call duration and status via API"
         }
     ],
     "index_web_pages_for_search": 1,
     "is_single": 1,
     "links": [],
-    "modified": "2026-07-01 00:00:00.000000",
+    "modified": "2026-08-10 00:00:00.000000",
     "modified_by": "Administrator",
     "module": "Customer CRM",
     "name": "Telephony Settings",
