@@ -1,0 +1,29 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2026-08-20 11:36:00.000000",
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "modified": "2026-08-20 11:36:00.000000",
+ "modified_by": "Administrator",
+ "module": "Customer CRM",
+ "name": "Agent Wise Sales Report",
+ "owner": "Administrator",
+ "ref_doctype": "Sales Invoice",
+ "report_name": "Agent Wise Sales Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Sales User"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Sales Manager"
+  }
+ ]
+}

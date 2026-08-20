@@ -1,4 +1,5 @@
 {
+ "app": "customer_crm",
  "charts": [
   {
    "chart_name": "Top Selling Items",
@@ -103,7 +104,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 3,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -137,9 +138,19 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Agent Wise Sales Report",
+   "link_count": 0,
+   "link_to": "Agent Wise Sales Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-07-19 01:02:36.273692",
+ "modified": "2026-08-20 11:40:06.508159",
  "modified_by": "Administrator",
  "module": "Customer CRM",
  "name": "Customer CRM",
@@ -185,5 +196,6 @@
    "type": "DocType"
   }
  ],
- "title": "Customer CRM"
+ "title": "Customer CRM",
+ "type": "Workspace"
 }
